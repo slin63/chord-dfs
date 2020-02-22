@@ -1,22 +1,19 @@
 package main
 
 import (
-	"flag"
 	"log"
-	"os"
-	"strconv"
 
 	"./node"
 )
 
-const logf = "o.log"
+const logf = "dfs.log"
+const prefix = "[DFS] - "
 
 func main() {
-	isIntroducer, err := strconv.ParseBool(os.Getenv("INTRODUCER"))
-	if err != nil {
-		log.Fatal("INTRODUCER not set in this environment")
-	}
-	flag.Parse()
-
-	node.Live(isIntroducer, logf)
+	log.SetPrefix(prefix)
+	// isIntroducer, err := strconv.ParseBool(os.Getenv("INTRODUCER"))
+	// if err != nil {
+	// 	log.Fatal("INTRODUCER not set in this environment")
+	// }
+	node.Live(logf)
 }
