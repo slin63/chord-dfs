@@ -27,6 +27,7 @@ type Self struct {
 const RPCPort = "6002"
 const RPCRetryInterval = 2
 const RPCRetryMax = 5
+const MembershipInterval = 5
 
 func ReportOnline(selfPID int) {
 	log.Printf("[ONLINE] [PID=%d]", selfPID)

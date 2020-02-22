@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"../spec"
 )
@@ -23,9 +24,18 @@ func Live(logf string) {
 	// Get initial membership info
 	self := spec.GetSelf()
 	spec.ReportOnline(self.PID)
-	log.Println("hello")
+
+	go subscribeMembership()
 	go listenForLeave()
 	<-block
+}
+
+// Periodically poll for membership information
+func subscribeMembership() {
+	for {
+		self = spec.GetSelf()
+		time.Sleep(time.Second * spec.MembershipInterval)
+	}
 }
 
 // Detect ctrl-c signal interrupts and dispatch [LEAVE]s to monitors accordingly

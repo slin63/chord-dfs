@@ -1,6 +1,5 @@
 FROM golang:alpine
-ENV CONFIG="config.json"
-ENV INTRODUCER=false
+ENV CONFIG="config.json" INTRODUCER=0 SERVER=0
 
 RUN mkdir /app
 ADD . /app/
