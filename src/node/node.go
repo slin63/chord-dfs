@@ -3,11 +3,14 @@ package node
 import (
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"../spec"
 )
 
 var self spec.Self
+var block = make(chan int, 1)
 
 func Live(logf string) {
 	// Initialize logging to file
@@ -21,9 +24,16 @@ func Live(logf string) {
 	self := spec.GetSelf()
 	spec.ReportOnline(self.PID)
 	log.Println("hello")
-	// So the program doesn't die
-	// var wg sync.WaitGroup
-	// wg.Add(1)
+	go listenForLeave()
+	<-block
+}
 
-	// wg.Wait()
+// Detect ctrl-c signal interrupts and dispatch [LEAVE]s to monitors accordingly
+func listenForLeave() {
+	c := make(chan os.Signal, 2)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		os.Exit(0)
+	}()
 }
