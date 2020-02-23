@@ -3,8 +3,17 @@ package spec
 import (
 	"log"
 	"net/rpc"
+	"sort"
 	"time"
+
+	"../sem"
 )
+
+// Semaphores
+var SelfSem = make(sem.Semaphore, 1)
+
+// Logging prefix
+const Prefix = "[DFS] - "
 
 // Membership RPCs
 type MemberNode struct {
@@ -19,6 +28,7 @@ type FingerTableT map[int]int
 type MemberMapT map[int]*MemberNode
 
 type Self struct {
+	M            int
 	PID          int
 	MemberMap    MemberMapT
 	FingerTable  FingerTableT
@@ -40,6 +50,33 @@ const MemberInterval = 5
 
 func ReportOnline(selfPID int) {
 	log.Printf("[ONLINE] [PID=%d]", selfPID)
+}
+
+// Find the nearest PID to the given FPID on the virtual ring
+// (including this node's own PID)
+func GetSuccPID(FPID int, self *Self) *int {
+	SelfSem.Lock()
+	PIDs := []int{}
+	for PID, _ := range (*self).MemberMap {
+		PIDs = append(PIDs, PID)
+	}
+	SelfSem.Unlock()
+	sort.Ints(PIDs)
+	diff := 10000
+	var succPID int
+	FPID = FPID % (1 << self.M)
+
+	// Find the smallest (FPID - PID) that is (> 0)
+	// in an ordered array of ints
+	for i := 0; i < len(PIDs); i++ {
+		log.Println(PIDs[i])
+		iterdiff := PIDs[i] - FPID
+		if (iterdiff) < diff && iterdiff > 0 {
+			diff = iterdiff
+			succPID = PIDs[i]
+		}
+	}
+	return &succPID
 }
 
 // Query the membership service running on the same machine for membership information.

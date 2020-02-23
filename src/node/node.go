@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"../hashing"
 	"../spec"
 )
 
@@ -51,16 +52,26 @@ func serveFilesystemRPC() {
 // Hash the file onto some appropriate point on the ring.
 // Respond to the client with the PID of the server that was selected.
 func (f *Filesystem) Put(args spec.PutArgs, PID *int) error {
-	log.Println(args)
-	// success
-	*PID = -9999
+	log.SetPrefix("Put(): ")
+	defer log.SetPrefix(spec.Prefix)
+	if self.M != 0 {
+		FPID := hashing.GetPID(args.Filename, self.M)
+		log.Println("FPID: ", FPID)
+
+		// success, handle errors here
+		PID = spec.GetSuccPID(FPID, &self)
+		log.Println("PID: ", *PID)
+	}
 	return nil
 }
 
 // Periodically poll for membership information
 func subscribeMembership() {
 	for {
+		spec.SelfSem.Lock()
 		self = spec.GetSelf()
+		spec.SelfSem.Unlock()
+
 		time.Sleep(time.Second * spec.MemberInterval)
 	}
 }

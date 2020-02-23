@@ -7,13 +7,13 @@ import (
 
 	"./client"
 	"./node"
+	"./spec"
 )
 
 const logf = "dfs.log"
-const prefix = "[DFS] - "
 
 func main() {
-	log.SetPrefix(prefix)
+	log.SetPrefix(spec.Prefix)
 	server, err := strconv.ParseBool(os.Getenv("SERVER"))
 	if err != nil {
 		log.Fatal("SERVER not set in this environment")

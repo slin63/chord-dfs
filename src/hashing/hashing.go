@@ -6,10 +6,10 @@ import (
 	"log"
 )
 
-// GetPID maps an address to one of 2^m logical points on a virtual ring.
-func GetPID(address string, m int) int {
+// GetPID maps a string to one of 2^m logical points on a virtual ring.
+func GetPID(s string, m int) int {
 	h := sha1.New()
-	if _, err := h.Write([]byte(address)); err != nil {
+	if _, err := h.Write([]byte(s)); err != nil {
 		log.Fatal(err)
 	}
 	b := h.Sum(nil)
