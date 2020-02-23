@@ -9,6 +9,7 @@ services:
       - SERVER=1
     ports:
       - "6002:6002"
+      - "6003:6003"
     build: .
 
   worker:
