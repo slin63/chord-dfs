@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// Membership RPCs
 type MemberNode struct {
 	// Address info formatted ip_address
 	IP        string
@@ -24,10 +25,18 @@ type Self struct {
 	SuspicionMap SuspicionMapT
 }
 
-const RPCPort = "6002"
-const RPCRetryInterval = 2
-const RPCRetryMax = 5
-const MembershipInterval = 5
+// DFS RPCs
+type PutArgs struct {
+	Filename string
+	Data     []byte
+}
+
+const FilesystemRPCPort = "6003"
+
+const MemberRPCPort = "6002"
+const MemberRPCRetryInterval = 2
+const MemberRPCRetryMax = 5
+const MemberInterval = 5
 
 func ReportOnline(selfPID int) {
 	log.Printf("[ONLINE] [PID=%d]", selfPID)
@@ -37,9 +46,9 @@ func ReportOnline(selfPID int) {
 func GetSelf() Self {
 	var client *rpc.Client
 	var err error
-	for i := 0; i <= RPCRetryMax; i++ {
-		time.Sleep(RPCRetryInterval * time.Second)
-		client, err = rpc.DialHTTP("tcp", "localhost:"+RPCPort)
+	for i := 0; i <= MemberRPCRetryMax; i++ {
+		time.Sleep(MemberRPCRetryInterval * time.Second)
+		client, err = rpc.DialHTTP("tcp", "localhost:"+MemberRPCPort)
 		if err != nil {
 			log.Println("RPC server still spooling... dialing:", err)
 		} else {

@@ -2,6 +2,9 @@ package node
 
 import (
 	"log"
+	"net"
+	"net/http"
+	"net/rpc"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,6 +15,9 @@ import (
 
 var self spec.Self
 var block = make(chan int, 1)
+
+// RPC type
+type Filesystem int
 
 func Live(logf string) {
 	// Initialize logging to file
@@ -25,16 +31,37 @@ func Live(logf string) {
 	self := spec.GetSelf()
 	spec.ReportOnline(self.PID)
 
+	go serveFilesystemRPC()
 	go subscribeMembership()
 	go listenForLeave()
 	<-block
+}
+
+func serveFilesystemRPC() {
+	fs := new(Filesystem)
+	rpc.Register(fs)
+	rpc.HandleHTTP()
+	l, e := net.Listen("tcp", ":"+spec.FilesystemRPCPort)
+	if e != nil {
+		log.Fatal("[ERROR] serveFilesystemRPC():", e)
+	}
+	go http.Serve(l, nil)
+}
+
+// Hash the file onto some appropriate point on the ring.
+// Respond to the client with the PID of the server that was selected.
+func (f *Filesystem) Put(args spec.PutArgs, PID *int) error {
+	log.Println(args)
+	// success
+	*PID = -9999
+	return nil
 }
 
 // Periodically poll for membership information
 func subscribeMembership() {
 	for {
 		self = spec.GetSelf()
-		time.Sleep(time.Second * spec.MembershipInterval)
+		time.Sleep(time.Second * spec.MemberInterval)
 	}
 }
 

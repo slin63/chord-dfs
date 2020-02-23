@@ -3,6 +3,9 @@ package client
 import (
 	"io/ioutil"
 	"log"
+	"net/rpc"
+
+	"../spec"
 )
 
 // 9 MP3: Build SDFS
@@ -41,14 +44,25 @@ func Parse(args []string) {
 	}
 }
 
-// How to copy a file onto another server?
+// - load in with read file
+// - send over tcp (have to use tcp because we're using rpcs) to server
+// - server decides what to do with it and where to put it
 func put(local, sdfs string) {
-	// - load in with read file
-	// - send over tcp (have to use tcp because we're using rpcs) to server
-	// - server decides what to do with it and where to put it
 	f, err := ioutil.ReadFile(local)
 	if err != nil {
 		log.Fatal("put(): ", err)
 	}
 	log.Println(f)
+
+	client, err := rpc.DialHTTP("tcp", "localhost:"+spec.FilesystemRPCPort)
+	if err != nil {
+		log.Fatal("put() dialing:", err)
+	}
+
+	// PID of assigned server
+	var assigned int
+	args := spec.PutArgs{local, f}
+	if err = client.Call("Filesystem.Put", args, &assigned); err != nil {
+		log.Println(assigned)
+	}
 }
