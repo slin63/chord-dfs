@@ -1,3 +1,4 @@
+// Client and server stubs for RPCs.
 package node
 
 import (
@@ -7,7 +8,6 @@ import (
 	"net/rpc"
 
 	"../hashing"
-
 	"../spec"
 )
 
@@ -28,21 +28,20 @@ func serveFilesystemRPC() {
 // Hash the file onto some appropriate point on the ring.
 // Message that point on the ring with the filename and data.
 // Respond to the client with the process ID of the server that was selected.
-func (f *Filesystem) Put(args spec.PutArgs, PID *int) error {
+func (f *Filesystem) Put(args spec.PutArgs, PIDPtr *int) error {
 	log.SetPrefix(spec.Prefix + "Put(): ")
 	defer log.SetPrefix(spec.Prefix)
 	if self.M != 0 {
 		FPID := hashing.MHash(args.Filename, self.M)
-		log.Println("FPID: ", FPID)
+		PIDPtr = spec.GetSuccPID(FPID, &self)
 
-		// success, handle errors here
-		PID = spec.GetSuccPID(FPID, &self)
-		log.Println("PID: ", *PID)
-
-		//
-		// TODO (02/25 @ 14:14): handle case where pid  =  selfPid
-		args.From = self.PID
-		putAssignC(*PID, &args)
+		// Dispatch PutAssign RPC or perform on self
+		if *PIDPtr != self.PID {
+			args.From = self.PID
+			putAssignC(*PIDPtr, &args)
+		} else {
+			_putAssign(&args)
+		}
 	}
 	return nil
 }
@@ -54,7 +53,7 @@ func (f *Filesystem) Put(args spec.PutArgs, PID *int) error {
 func (f *Filesystem) PutAssign(args spec.PutArgs, replicas *[]int) error {
 	log.SetPrefix(spec.Prefix + "PutAssign(): ")
 	defer log.SetPrefix(spec.Prefix)
-	log.Println(args)
+	_putAssign(&args)
 	// TODO (02/25 @ 13:21): implement
 	return nil
 }

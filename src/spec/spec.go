@@ -1,3 +1,4 @@
+// Constants for configuration and dealing with the membership layer
 package spec
 
 import (
@@ -12,7 +13,7 @@ import (
 var SelfRWMutex sync.RWMutex
 
 // Logging prefix
-const Prefix = "[DFS] - "
+const Prefix = "[DFS]"
 
 // Membership RPCs
 type MemberNode struct {
@@ -49,12 +50,12 @@ type PutArgs struct {
 const FilesystemRPCPort = "6003"
 
 const MemberRPCPort = "6002"
-const MemberRPCRetryInterval = 2
+const MemberRPCRetryInterval = 3
 const MemberRPCRetryMax = 5
 const MemberInterval = 5
 
-func ReportOnline(selfPID int) {
-	log.Printf("[ONLINE] [PID=%d]", selfPID)
+func ReportOnline() {
+	log.Printf("[ONLINE]")
 }
 
 // Find the nearest PID to the given FPID on the virtual ring
