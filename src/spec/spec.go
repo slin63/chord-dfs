@@ -4,13 +4,12 @@ import (
 	"log"
 	"net/rpc"
 	"sort"
+	"sync"
 	"time"
-
-	"../sem"
 )
 
 // Semaphores
-var SelfSem = make(sem.Semaphore, 1)
+var SelfRWMutex sync.RWMutex
 
 // Logging prefix
 const Prefix = "[DFS] - "
@@ -55,12 +54,12 @@ func ReportOnline(selfPID int) {
 // Find the nearest PID to the given FPID on the virtual ring
 // (including this node's own PID)
 func GetSuccPID(FPID int, self *Self) *int {
-	SelfSem.Lock()
+	SelfRWMutex.RLock()
 	PIDs := []int{}
-	for PID, _ := range (*self).MemberMap {
+	for PID := range (*self).MemberMap {
 		PIDs = append(PIDs, PID)
 	}
-	SelfSem.Unlock()
+	SelfRWMutex.RUnlock()
 	sort.Ints(PIDs)
 	diff := 10000
 	var succPID int
@@ -99,7 +98,7 @@ func GetSelf(self *Self) {
 	if err != nil {
 		log.Fatal("RPC error:", err)
 	}
-	SelfSem.Lock()
+	SelfRWMutex.Lock()
 	*self = reply
-	SelfSem.Unlock()
+	SelfRWMutex.Unlock()
 }
