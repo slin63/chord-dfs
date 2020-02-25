@@ -2,6 +2,7 @@
 package node
 
 import (
+	"fmt"
 	"log"
 
 	"../spec"
@@ -11,6 +12,6 @@ import (
 // Also dispatch RPC calls to replica nodes
 func _putAssign(args *spec.PutArgs) {
 	log.SetPrefix(log.Prefix() + "_putAssign(): ")
-	defer log.SetPrefix(spec.Prefix)
+	defer log.SetPrefix(spec.Prefix + fmt.Sprintf(" [PID=%d]", self.PID) + " - ")
 	log.Println(args)
 }

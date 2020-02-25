@@ -29,8 +29,8 @@ func serveFilesystemRPC() {
 // Message that point on the ring with the filename and data.
 // Respond to the client with the process ID of the server that was selected.
 func (f *Filesystem) Put(args spec.PutArgs, PIDPtr *int) error {
-	log.SetPrefix(spec.Prefix + "Put(): ")
-	defer log.SetPrefix(spec.Prefix)
+	log.SetPrefix(log.Prefix() + "Put(): ")
+	defer log.SetPrefix(spec.Prefix + fmt.Sprintf(" [PID=%d]", self.PID) + " - ")
 	if self.M != 0 {
 		FPID := hashing.MHash(args.Filename, self.M)
 		PIDPtr = spec.GetSuccPID(FPID, &self)
@@ -51,8 +51,8 @@ func (f *Filesystem) Put(args spec.PutArgs, PIDPtr *int) error {
 // Store that file on this machine and its replica nodes
 // Return a slice of PIDs of servers with that file
 func (f *Filesystem) PutAssign(args spec.PutArgs, replicas *[]int) error {
-	log.SetPrefix(spec.Prefix + "PutAssign(): ")
-	defer log.SetPrefix(spec.Prefix)
+	log.SetPrefix(log.Prefix() + "PutAssign(): ")
+	defer log.SetPrefix(spec.Prefix + fmt.Sprintf(" [PID=%d]", self.PID) + " - ")
 	_putAssign(&args)
 	// TODO (02/25 @ 13:21): implement
 	return nil
@@ -62,8 +62,8 @@ func (f *Filesystem) PutAssign(args spec.PutArgs, replicas *[]int) error {
 // - send over tcp (have to use tcp because we're using rpcs) to server
 // - server decides what to do with it and where to put it
 func putAssignC(PID int, args *spec.PutArgs) {
-	log.SetPrefix(spec.Prefix + "putAssignC(): ")
-	defer log.SetPrefix(spec.Prefix)
+	log.SetPrefix(log.Prefix() + "putAssignC(): ")
+	defer log.SetPrefix(spec.Prefix + fmt.Sprintf(" [PID=%d]", self.PID) + " - ")
 	client := connect(PID)
 	defer client.Close()
 
