@@ -61,7 +61,7 @@ func put(local, sdfs string) {
 
 	// PID of assigned server
 	var assigned int
-	args := spec.PutArgs{local, f}
+	args := spec.PutArgs{local, f, spec.NILPID}
 	if err = client.Call("Filesystem.Put", args, &assigned); err != nil {
 		log.Println(assigned)
 	}

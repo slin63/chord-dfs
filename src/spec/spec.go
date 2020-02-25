@@ -26,6 +26,8 @@ type SuspicionMapT map[int]int64
 type FingerTableT map[int]int
 type MemberMapT map[int]*MemberNode
 
+const NILPID = -1
+
 type Self struct {
 	M            int
 	PID          int
@@ -36,8 +38,12 @@ type Self struct {
 
 // DFS RPCs
 type PutArgs struct {
+	// File data
 	Filename string
 	Data     []byte
+
+	// Server data
+	From int
 }
 
 const FilesystemRPCPort = "6003"

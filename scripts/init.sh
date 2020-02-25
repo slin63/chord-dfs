@@ -2,7 +2,7 @@
 trap 'kill $(jobs -p)' TERM
 
 # start service in background here
-go run src/main.go &
+./main &
 go run chord-failure-detector/src/main.go &
 
 wait
