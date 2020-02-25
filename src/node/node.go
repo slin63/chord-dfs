@@ -29,7 +29,7 @@ func Live(logf string) {
 	defer f.Close()
 
 	// Get initial membership info
-	self := spec.GetSelf()
+	spec.GetSelf(&self)
 	spec.ReportOnline(self.PID)
 
 	go serveFilesystemRPC()
@@ -46,16 +46,17 @@ func serveFilesystemRPC() {
 	if e != nil {
 		log.Fatal("[ERROR] serveFilesystemRPC():", e)
 	}
-	go http.Serve(l, nil)
+	// todo: processes RPCs synchronously or spawns goroutines?
+	http.Serve(l, nil)
 }
 
 // Hash the file onto some appropriate point on the ring.
-// Respond to the client with the PID of the server that was selected.
+// Respond to the client with the process ID of the server that was selected.
 func (f *Filesystem) Put(args spec.PutArgs, PID *int) error {
 	log.SetPrefix("Put(): ")
 	defer log.SetPrefix(spec.Prefix)
 	if self.M != 0 {
-		FPID := hashing.GetPID(args.Filename, self.M)
+		FPID := hashing.MHash(args.Filename, self.M)
 		log.Println("FPID: ", FPID)
 
 		// success, handle errors here
@@ -68,10 +69,9 @@ func (f *Filesystem) Put(args spec.PutArgs, PID *int) error {
 // Periodically poll for membership information
 func subscribeMembership() {
 	for {
-		spec.SelfSem.Lock()
-		self = spec.GetSelf()
-		spec.SelfSem.Unlock()
-
+		// todo: look into read write locks, different from mutexes
+		spec.GetSelf(&self)
+		// todo: could also use timer channel
 		time.Sleep(time.Second * spec.MemberInterval)
 	}
 }

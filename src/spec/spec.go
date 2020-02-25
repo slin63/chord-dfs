@@ -66,10 +66,11 @@ func GetSuccPID(FPID int, self *Self) *int {
 	var succPID int
 	FPID = FPID % (1 << self.M)
 
+	log.Println("GetSuccPID(): ", PIDs)
+
 	// Find the smallest (FPID - PID) that is (> 0)
 	// in an ordered array of ints
 	for i := 0; i < len(PIDs); i++ {
-		log.Println(PIDs[i])
 		iterdiff := PIDs[i] - FPID
 		if (iterdiff) < diff && iterdiff > 0 {
 			diff = iterdiff
@@ -80,7 +81,7 @@ func GetSuccPID(FPID int, self *Self) *int {
 }
 
 // Query the membership service running on the same machine for membership information.
-func GetSelf() Self {
+func GetSelf(self *Self) {
 	var client *rpc.Client
 	var err error
 	for i := 0; i <= MemberRPCRetryMax; i++ {
@@ -98,5 +99,7 @@ func GetSelf() Self {
 	if err != nil {
 		log.Fatal("RPC error:", err)
 	}
-	return reply
+	SelfSem.Lock()
+	*self = reply
+	SelfSem.Unlock()
 }

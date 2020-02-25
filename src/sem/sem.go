@@ -19,5 +19,8 @@ func (s Semaphore) Unlock() {
 	if logging {
 		log.Printf("Semaphore.Unlock(): Unlocking!")
 	}
+	if len(s) == 0 {
+		panic("Semaphore.Unlock() called on unlocked semaphore")
+	}
 	<-s
 }
