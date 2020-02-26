@@ -15,6 +15,9 @@ var SelfRWMutex sync.RWMutex
 // Logging prefix
 const Prefix = "[DFS]"
 
+// Storage directory
+const Filedir = "/app/store/"
+
 // Membership RPCs
 type MemberNode struct {
 	// Address info formatted ip_address

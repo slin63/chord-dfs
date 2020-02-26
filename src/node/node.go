@@ -16,7 +16,7 @@ var self spec.Self
 var block = make(chan int, 1)
 
 // Maps filename to length of byte array
-var store map[string]int
+var store = make(map[string]int)
 
 func Live(logf string) {
 	// Initialize logging to file
@@ -25,6 +25,9 @@ func Live(logf string) {
 		log.Fatalf("error opening file: %v", err)
 	}
 	defer f.Close()
+
+	// Create directory for storing files
+	os.Mkdir(spec.Filedir, 0644)
 
 	// Get initial membership info
 	spec.GetSelf(&self)
