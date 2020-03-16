@@ -6,7 +6,6 @@ services:
     container_name: dfs-introducer
     environment:
       - INTRODUCER=1
-      - SERVER=1
     ports:
       - "6002:6002"
       - "6003:6003"
@@ -15,6 +14,4 @@ services:
   worker:
     depends_on:
       - "dfs-introducer"
-    environment:
-      - SERVER=1
     build: .

@@ -7,16 +7,12 @@ import (
 	"sort"
 	"sync"
 	"time"
+
+	"github.com/slin63/chord-dfs/internal/config"
 )
 
 // Semaphores
 var SelfRWMutex sync.RWMutex
-
-// Logging prefix
-const Prefix = "[DFS]"
-
-// Storage directory
-const Filedir = "/app/store/"
 
 // Membership RPCs
 type MemberNode struct {
@@ -50,52 +46,50 @@ type PutArgs struct {
 	From int
 }
 
-const FilesystemRPCPort = "6003"
-
-const MemberRPCPort = "6002"
-const MemberRPCRetryInterval = 3
-const MemberRPCRetryMax = 5
-const MemberInterval = 5
-
 func ReportOnline() {
 	log.Printf("[ONLINE]")
 }
 
 // Find the nearest PID to the given FPID on the virtual ring
 // (including this node's own PID)
-func GetSuccPID(FPID int, self *Self) *int {
+func NearestPID(FPID int, self *Self) *int {
 	SelfRWMutex.RLock()
 	PIDs := []int{}
+	PIDsExtended := []int{}
+
 	for PID := range (*self).MemberMap {
 		PIDs = append(PIDs, PID)
 	}
 	SelfRWMutex.RUnlock()
+
+	for _, PID := range PIDs {
+		PIDsExtended = append(PIDsExtended, PID+(1<<self.M))
+	}
+	PIDs = append(PIDs, PIDsExtended...)
+
 	sort.Ints(PIDs)
 	diff := 10000
-	var succPID int
-	FPID = FPID % (1 << self.M)
-
-	log.Println("GetSuccPID(): ", PIDs)
+	var nearestPID int
 
 	// Find the smallest (FPID - PID) that is (> 0)
 	// in an ordered array of ints
 	for i := 0; i < len(PIDs); i++ {
 		iterdiff := PIDs[i] - FPID
-		if (iterdiff) < diff && iterdiff > 0 {
+		if (iterdiff < diff) && (iterdiff > 0) {
 			diff = iterdiff
-			succPID = PIDs[i]
+			nearestPID = PIDs[i] % (1 << self.M)
 		}
 	}
-	return &succPID
+	return &nearestPID
 }
 
 // Query the membership service running on the same machine for membership information.
 func GetSelf(self *Self) {
 	var client *rpc.Client
 	var err error
-	for i := 0; i <= MemberRPCRetryMax; i++ {
-		time.Sleep(MemberRPCRetryInterval * time.Second)
-		client, err = rpc.DialHTTP("tcp", "localhost:"+MemberRPCPort)
+	for i := 0; i <= config.C.MemberRPCRetryMax; i++ {
+		time.Sleep(time.Duration(config.C.MemberRPCRetryInterval) * time.Second)
+		client, err = rpc.DialHTTP("tcp", "localhost:"+config.C.MemberRPCPort)
 		if err != nil {
 			log.Println("RPC server still spooling... dialing:", err)
 		} else {

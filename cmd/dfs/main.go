@@ -3,24 +3,20 @@ package main
 import (
 	"log"
 	"os"
-	"strconv"
 
-	"github.com/slin63/chord-dfs/internal/client"
+	"github.com/slin63/chord-dfs/internal/config"
 	"github.com/slin63/chord-dfs/internal/node"
-	"github.com/slin63/chord-dfs/internal/spec"
 )
 
-const logf = "dfs.log"
-
 func main() {
-	log.SetPrefix(spec.Prefix + " - ")
-	server, err := strconv.ParseBool(os.Getenv("SERVER"))
+	log.SetPrefix(config.C.Prefix + " - ")
+
+	// Initialize logging to file
+	f, err := os.OpenFile(config.C.Logfile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		log.Fatal("SERVER not set in this environment")
+		log.Fatalf("error opening file: %v", err)
 	}
-	if server {
-		node.Live(logf)
-	} else {
-		client.Parse(os.Args[1:])
-	}
+	defer f.Close()
+
+	node.Live()
 }

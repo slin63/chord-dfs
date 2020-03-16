@@ -1,3 +1,16 @@
 {
-    "Introducer": "dfs-introducer"
+    "Introducer": "dfs-introducer",
+
+    "Prefix": "[DFS]",
+    "Filedir": "/temp/store/",
+    "Logfile": "dfs.log",
+    "LogfileClient": "dfs-client.log",
+
+    "LogPutAssign": true,
+
+    "FilesystemRPCPort": "6003",
+    "MemberRPCPort": "6002",
+    "MemberRPCRetryInterval": 3,
+    "MemberRPCRetryMax": 5,
+    "MemberInterval": 1
 }

@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/slin63/chord-dfs/internal/config"
 	"github.com/slin63/chord-dfs/internal/spec"
 )
 
@@ -18,20 +19,13 @@ var block = make(chan int, 1)
 // Maps filename to length of byte array
 var store = make(map[string]int)
 
-func Live(logf string) {
-	// Initialize logging to file
-	f, err := os.OpenFile(logf, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatalf("error opening file: %v", err)
-	}
-	defer f.Close()
-
+func Live() {
 	// Create directory for storing files
-	os.Mkdir(spec.Filedir, 0644)
+	os.Mkdir(config.C.Filedir, 0644)
 
 	// Get initial membership info
 	spec.GetSelf(&self)
-	log.SetPrefix(spec.Prefix + fmt.Sprintf(" [PID=%d]", self.PID) + " - ")
+	log.SetPrefix(config.C.Prefix + fmt.Sprintf(" [PID=%d]", self.PID) + " - ")
 	spec.ReportOnline()
 
 	go serveFilesystemRPC()
@@ -44,7 +38,7 @@ func Live(logf string) {
 func subscribeMembership() {
 	for {
 		spec.GetSelf(&self)
-		time.Sleep(time.Second * spec.MemberInterval)
+		time.Sleep(time.Second * time.Duration(config.C.MemberInterval))
 	}
 }
 
