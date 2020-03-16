@@ -1,3 +1,17 @@
+package client
+
+import (
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/rpc"
+
+	"github.com/slin63/chord-dfs/internal/config"
+	"github.com/slin63/chord-dfs/internal/spec"
+
+	"github.com/slin63/raft-consensus/pkg/responses"
+)
+
 // Interfaces with Raft leader.
 //   - Client validates syntax of user entry
 //   - Sends entry to Raft leader
@@ -6,51 +20,29 @@
 //       DFS server via "handleEntry" RPC
 //   - DFS server returns results to Raft leader,
 //   - Raft leader returns results to Client.
-
-package client
-
-import (
-	"io/ioutil"
-	"log"
-	"net/rpc"
-
-	"github.com/slin63/chord-dfs/internal/config"
-	"github.com/slin63/chord-dfs/internal/spec"
-)
-
-// 9 MP3: Build SDFS
-// 12   - Required operations:
-// 1. `put localfilename sdfsfilename` (from local dir)
-//   - `put` both inserts _and_ updates a file
-// 2. `get sdfsfilename localfilename` (fetches to local dir)
-// 3. `delete sdfsfilename`
-// 4. `ls filename` (list all machines where this data is stored)
-// 5. `store` (list all files stored on this machine)
-
-const helpS = `Available operations:
-1. put localfilename sdfsfilename (from local dir)
-2. get sdfsfilename localfilename (fetches to local dir)
-3. delete sdfsfilename
-4. ls filename (list all machines where this data is stored)
-5. store (list all files stored on this machine)`
-
 func Parse(args []string) {
 	if len(args) == 0 {
-		log.Println(helpS)
+		fmt.Println(helpS)
 		return
 	}
 
-	switch args[0] {
-	case "put":
-		if len(args) == 3 {
-			put(args[1], args[2])
+	// Check input validity. If valid, send off to Raft for replication.
+	if entry, ok := parseEntry(args); !ok {
+		fmt.Println("Invalid input!")
+		fmt.Println(helpS)
+		return
+	} else {
+		client, err := rpc.DialHTTP("tcp", "localhost:"+config.C.RaftRPCPort)
+		if err != nil {
+			log.Fatal("[ERROR] PutEntry() dialing:", err)
 		}
-	case "get":
-		log.Println("get")
-	case "delete":
-		log.Println("delete")
-	default:
-		log.Println(helpS)
+
+		// PID of assigned server
+		var result *responses.Result
+		if err = client.Call("Ocean.PutEntry", entry, &result); err != nil {
+			log.Fatal(err)
+		}
+		log.Println(*result)
 	}
 }
 

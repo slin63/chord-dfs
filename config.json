@@ -17,5 +17,5 @@
     "MemberRPCPort": "6002",
     "MemberRPCRetryInterval": 3,
     "MemberRPCRetryMax": 5,
-    "MemberInterval": 1,
+    "MemberInterval": 1
 }
