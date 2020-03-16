@@ -1,7 +1,8 @@
+# Only launches the DFS and Failure Detector
+
 FROM golang:alpine
 RUN apk add --no-cache git
-
-ENV CONFIG="/go/src/github.com/slin63/chord-dfs/config.json" INTRODUCER=0 GODIR="/go/src/github.com/slin63"
+ENV CONFIG="/go/src/github.com/slin63/chord-dfs/config.json" INTRODUCER=0 GODIR="/go/src/github.com/slin63" ALL=0
 
 RUN mkdir -p /temp/store/
 RUN go get github.com/slin63/raft-consensus/pkg/responses

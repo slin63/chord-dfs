@@ -2,16 +2,22 @@ version: '3'
 
 # All of these servers should have their ports exposed, but because we're using --scale we're not going to.
 services:
-  dfs-introducer:
-    container_name: dfs-introducer
+  introducer:
+    container_name: introducer
     environment:
       - INTRODUCER=1
     ports:
       - "6002:6002"
       - "6003:6003"
-    build: .
+      - "6004:6004"
+    build:
+      context: .
+      dockerfile: Dockerfile-all
+
 
   worker:
     depends_on:
-      - "dfs-introducer"
-    build: .
+      - "introducer"
+    build:
+      context: .
+      dockerfile: Dockerfile-all
