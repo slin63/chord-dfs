@@ -30,6 +30,14 @@ type configParam struct {
 	FilesystemRPCPort string
 	Filedir           string
 
+	// Consensus layer
+	RaftRPCPort string
+
+	// RPC Contexts
+	RPCMaxRetries    int
+	RPCTimeout       int
+	RPCRetryInterval int
+
 	// Membership layer
 	MemberRPCPort          string
 	MemberRPCRetryInterval int
