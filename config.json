@@ -7,6 +7,7 @@
     "LogfileClient": "dfs-client.log",
 
     "LogPutAssign": true,
+    "LogExecute": true,
 
     "RaftRPCPort": "6004",
     "FilesystemRPCPort": "6005",

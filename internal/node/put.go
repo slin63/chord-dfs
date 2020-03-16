@@ -11,8 +11,6 @@ import (
 	"github.com/slin63/chord-dfs/internal/spec"
 )
 
-type Filesystem int
-
 // Put (from: client)
 //   - Hash the file onto some appropriate point on the ring.
 //   - Message that point on the ring with the filename and data.

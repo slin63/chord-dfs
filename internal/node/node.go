@@ -13,6 +13,9 @@ import (
 	"github.com/slin63/chord-dfs/internal/spec"
 )
 
+// RPC type
+type Filesystem int
+
 var self spec.Self
 var block = make(chan int, 1)
 

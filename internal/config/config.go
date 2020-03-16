@@ -22,9 +22,7 @@ type configParam struct {
 	Logfile       string
 	LogfileClient string
 	LogPutAssign  bool
-
-	LogDigestEntries bool
-	LogDigestCommits bool
+	LogExecute    bool
 
 	// Filesystem
 	FilesystemRPCPort string

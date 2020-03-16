@@ -13,9 +13,9 @@ import (
 )
 
 // Interfaces with Raft leader.
-//   - Client validates syntax of user entry
-//   - Sends entry to Raft leader
-//   - Raft leader replicates entry to replica nodes
+//   - x Client validates syntax of user entry
+//   - x Sends entry to Raft leader
+//   - x Raft leader replicates entry to replica nodes
 //   - After successful replication, Raft leader tries applying change by contacting
 //       DFS server via "handleEntry" RPC
 //   - DFS server returns results to Raft leader,
