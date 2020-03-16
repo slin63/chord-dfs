@@ -1,3 +1,12 @@
+// Interfaces with Raft leader.
+//   - Client validates syntax of user entry
+//   - Sends entry to Raft leader
+//   - Raft leader replicates entry to replica nodes
+//   - After successful replication, Raft leader tries applying change by contacting
+//       DFS server via "handleEntry" RPC
+//   - DFS server returns results to Raft leader,
+//   - Raft leader returns results to Client.
+
 package client
 
 import (
@@ -45,9 +54,9 @@ func Parse(args []string) {
 	}
 }
 
-// - load in with read file
-// - send over tcp (have to use tcp because we're using rpcs) to server
-// - server decides what to do with it and where to put it
+// - Read file `local`
+// - Send RPC to DFS server with correct arguments
+// - DFS server decides what to do with it and where to put it
 func put(local, sdfs string) {
 	f, err := ioutil.ReadFile(local)
 	if err != nil {
