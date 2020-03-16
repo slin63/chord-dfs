@@ -5,9 +5,9 @@ import (
 	"os"
 	"strconv"
 
-	"./client"
-	"./node"
-	"./spec"
+	"github.com/slin63/chord-dfs/internal/client"
+	"github.com/slin63/chord-dfs/internal/node"
+	"github.com/slin63/chord-dfs/internal/spec"
 )
 
 const logf = "dfs.log"

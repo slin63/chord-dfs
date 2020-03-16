@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/rpc"
 
-	"../spec"
+	"github.com/slin63/chord-dfs/internal/spec"
 )
 
 // 9 MP3: Build SDFS

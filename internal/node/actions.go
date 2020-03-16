@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"../filesys"
-	"../spec"
+	"github.com/slin63/chord-dfs/internal/filesys"
+	"github.com/slin63/chord-dfs/internal/spec"
 )
 
 // Store the filename and data on this machine
@@ -18,11 +18,7 @@ func _putAssign(args *spec.PutArgs) {
 	if ok {
 		log.Printf("Updating %s:%d -> %d", (*args).Filename, v, len((*args).Data))
 	} else {
-		n.88llog.Printf("Setting %s:%d", (*args).Filename, len((*args).Data)) 10:54 AM
-
-		Hey did you see my post about going to UCB thurs night?
-
-		https://hellskitchen.ucbtheatre.com/performance/72578e3se8
+		log.Printf("Setting %s:%d", (*args).Filename, len((*args).Data))
 	}
 	// Update in memory store
 	store[(*args).Filename] = len((*args).Data)

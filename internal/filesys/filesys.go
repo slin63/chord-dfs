@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 
-	"../spec"
+	"github.com/slin63/chord-dfs/internal/spec"
 )
 
 // Destructive file writer

@@ -2,8 +2,8 @@ version: '3'
 
 # All of these servers should have their ports exposed, but because we're using --scale we're not going to.
 services:
-  introducer:
-    container_name: introducer
+  dfs-introducer:
+    container_name: dfs-introducer
     environment:
       - INTRODUCER=1
       - SERVER=1
@@ -14,7 +14,7 @@ services:
 
   worker:
     depends_on:
-      - "introducer"
+      - "dfs-introducer"
     environment:
       - SERVER=1
     build: .

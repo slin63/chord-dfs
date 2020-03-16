@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"../spec"
+	"github.com/slin63/chord-dfs/internal/spec"
 )
 
 var self spec.Self

@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"net/rpc"
 
-	"../hashing"
-	"../spec"
+	"github.com/slin63/chord-dfs/internal/hashing"
+	"github.com/slin63/chord-dfs/internal/spec"
 )
 
 type Filesystem int

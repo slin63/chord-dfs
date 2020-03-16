@@ -1,9 +1,13 @@
 FROM golang:alpine
-ENV CONFIG="config.json" INTRODUCER=0 SERVER=0
+RUN apk add --no-cache git
+ENV CONFIG="/go/src/github.com/slin63/chord-dfs/config.json" INTRODUCER=0 SERVER=0
 
-RUN mkdir /app
-ADD . /app/
-WORKDIR /app
-RUN go build -o main src/main.go
+ADD . /go/src/github.com/slin63/chord-dfs
+WORKDIR /go/src/github.com/slin63/
 
-CMD ["sh", "-c", "./scripts/init.sh"]
+RUN git clone https://github.com/slin63/chord-failure-detector
+RUN go build -o dfs ./chord-dfs/cmd/dfs/main.go
+RUN go build -o member ./chord-failure-detector/cmd/fd/main.go
+
+CMD ["sh", "-c", "./chord-dfs/scripts/init.sh"]
+
