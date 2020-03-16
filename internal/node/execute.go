@@ -8,9 +8,9 @@ import (
     "github.com/slin63/raft-consensus/pkg/responses"
 )
 
-func (f *Filesystem) Execute(entry string, result responses.Result) error {
+func (f *Filesystem) Execute(entry string, result *responses.Result) error {
     config.LogIf(fmt.Sprintf("[EXECUTE] Executing %s", entry), config.C.LogExecute)
     config.LogIf(fmt.Sprintf("[EXECUTE] TODO", entry), config.C.LogExecute)
-
+    *result = responses.Result{Entry: entry, Success: true}
     return nil
 }
