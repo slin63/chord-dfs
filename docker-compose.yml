@@ -12,7 +12,7 @@ services:
       - "6004:6004"
     build:
       context: .
-      dockerfile: Dockerfile-all
+      dockerfile: dockerfiles/all/Dockerfile
 
 
   worker:
@@ -20,4 +20,4 @@ services:
       - "introducer"
     build:
       context: .
-      dockerfile: Dockerfile-all
+      dockerfile: dockerfiles/all/Dockerfile

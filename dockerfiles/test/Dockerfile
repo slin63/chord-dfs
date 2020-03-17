@@ -11,7 +11,7 @@ RUN git clone https://github.com/slin63/chord-failure-detector $GODIR/chord-fail
 
 ADD . $GODIR/chord-dfs
 
-RUN go build -o dfs $GODIR/chord-dfs/cmd/dfs/main.go
+RUN go build -o dfs $GODIR/chord-dfs/cmd/server/main.go
 RUN go build -o member $GODIR/chord-failure-detector/cmd/fd/main.go
 
 CMD ["sh", "-c", "$GODIR/chord-dfs/scripts/init.sh"]
