@@ -11,25 +11,39 @@ import (
 )
 
 // Typical flow:
-// Client calls Put(File, PID) -> Server receives Put(File, PID) -> PID == self.PID -> Server calls _putAssign(File, PID) on self
-// 																 -> PID != self.PID -> Server calls callPutAssign(File, PID) on PID
-// Server receives PutAssign(File, PID) -> Server calls _putAssign(File, PID) on self
+//   1. Client passes entry to Raft leader
+//   2. Raft leader replicates entry and passes back to Filesystem.Execute RPC
 
-// Put (client RPC to initiate PUT action) (from: client)
+// From there:
+// -> Filesystem.Execute() calls Put(File, PID)
+//   -> Server receives Put(File, PID)
+//      -> PID == self.PID
+//         -> Server calls _putAssign(File, PID) on self
+//            -> Return result to Execute, Execute returns result to Raft leader
+//               -> Raft leader returns result to Client 🥳
+//      -> PID != self.PID
+//         -> Server calls callPutAssign(File, PID) on ServerB with PID == PID
+//            -> ServerB receives PutAssign(File, PID)
+//               -> ServerB calls _putAssign(File, PID) on self
+//                 -> Return result to Execute, Execute returns result to Raft leader
+//                    -> Raft leader returns result to Client 🥳
+
+// Put (function to initiate PUT action) (from: client)
 //   - Hash the file onto some appropriate point on the ring.
 //   - Message that point on the ring with the filename and data.
 //   - Respond to the client with the process ID of the server that was selected.
-func (f *Filesystem) Put(args spec.PutArgs, PIDPtr *int) error {
+func Put(args *spec.PutArgs) error {
 	if self.M != 0 {
+		// Identify PID of server to give file to by calculating file's hash (FPID)
 		FPID := hashing.MHash(args.Filename, self.M)
-		PIDPtr = spec.NearestPID(FPID, &self)
+		PID := spec.NearestPID(FPID, &self)
 
 		// Dispatch PutAssign RPC or perform on self
-		if *PIDPtr != self.PID {
+		if PID != self.PID {
 			args.From = self.PID
-			callPutAssign(*PIDPtr, &args)
+			callPutAssign(PID, args)
 		} else {
-			_putAssign(&args)
+			_putAssign(args)
 		}
 	}
 	return nil
@@ -52,7 +66,7 @@ func callPutAssign(PID int, args *spec.PutArgs) {
 // Return a slice of PIDs of servers with that file
 func (f *Filesystem) PutAssign(args spec.PutArgs, replicas *[]int) error {
 	_putAssign(&args)
-	// TODO (02/25 @ 13:21): implement
+	// TODO (03/18 @ 15:41): find a way to return nodes with replicas
 	return nil
 }
 

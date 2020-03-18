@@ -52,7 +52,7 @@ func ReportOnline() {
 
 // Find the nearest PID to the given FPID on the virtual ring
 // (including this node's own PID)
-func NearestPID(FPID int, self *Self) *int {
+func NearestPID(FPID int, self *Self) int {
 	SelfRWMutex.RLock()
 	PIDs := []int{}
 	PIDsExtended := []int{}
@@ -80,7 +80,7 @@ func NearestPID(FPID int, self *Self) *int {
 			nearestPID = PIDs[i] % (1 << self.M)
 		}
 	}
-	return &nearestPID
+	return nearestPID
 }
 
 // Query the membership service running on the same machine for membership information.

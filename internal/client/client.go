@@ -2,13 +2,11 @@ package client
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/rpc"
 	"strings"
 
 	"github.com/slin63/chord-dfs/internal/config"
-	"github.com/slin63/chord-dfs/internal/spec"
 	"github.com/slin63/chord-dfs/pkg/parser"
 
 	"github.com/slin63/raft-consensus/pkg/responses"
@@ -22,9 +20,9 @@ const helpS = `Available operations:
 5. store (list all files stored on this machine)`
 
 // Interfaces with Raft leader.
-//   - x Client validates syntax of user entry
-//   - x Sends entry to Raft leader
-//   - x Raft leader replicates entry to replica nodes
+//   - Client validates syntax of user entry
+//   - Sends entry to Raft leader
+//   - Raft leader replicates entry to replica nodes
 //   - After successful replication, Raft leader tries applying change by contacting
 //       DFS server via "handleEntry" RPC
 //   - DFS server returns results to Raft leader,
@@ -52,28 +50,5 @@ func Parse(args []string) {
 			log.Fatal(err)
 		}
 		log.Println(*result)
-	}
-}
-
-// - Read file `local`
-// - Send RPC to DFS server with correct arguments
-// - DFS server decides what to do with it and where to put it
-func put(local, sdfs string) {
-	f, err := ioutil.ReadFile(local)
-	if err != nil {
-		log.Fatal("put(): ", err)
-	}
-	log.Println(f)
-
-	client, err := rpc.DialHTTP("tcp", "localhost:"+config.C.FilesystemRPCPort)
-	if err != nil {
-		log.Fatal("put() dialing:", err)
-	}
-
-	// PID of assigned server
-	var assigned int
-	args := spec.PutArgs{sdfs, f, spec.NILPID}
-	if err = client.Call("Filesystem.Put", args, &assigned); err != nil {
-		log.Println(assigned)
 	}
 }

@@ -9,7 +9,7 @@ TODO: Link blog post here.
 1. `docker-compose build && docker-compose up --remove-orphans --scale worker=<worker_count>`
     - Start 1 + `worker_count` nodes.
     - Recommended `worker_count ~= 5`. CPU utilization is high across all three components so expect some sluggishness.
-2. Start client with `CONFIG=$(pwd)/config/config.dfs.json go run ./cmd/client/main.go <command>`. Available client commands listed below in _Client Commands_.
+2. Start client with `CONFIG=$(pwd)/config/config.dfs.json go run ./cmd/client/main.go put go.mod sdfs-gomod`. Available client commands listed below in _Client Commands_.
 
 #### Configuration
 `config.` files for each component can be found inside `/config`. Mappings are as follows:

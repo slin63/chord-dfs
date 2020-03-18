@@ -1,3 +1,4 @@
+// Client for interfacing with DFS through the Raft leader
 package main
 
 import (
