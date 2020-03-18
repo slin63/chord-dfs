@@ -106,3 +106,53 @@ func GetSelf(self *Self) {
 	*self = reply
 	SelfRWMutex.Unlock()
 }
+
+// Get the PID of the node immediately behind the given PID
+func GetPredecessor(self *Self, PID int) int {
+	PIDs, _ := extendedRing(self)
+	idx := index(PIDs, PID)
+	predIdx := (idx - 1) % len(PIDs)
+
+	return PIDs[predIdx] % (1 << self.M)
+}
+
+// Get the PID of the node immediately in front of the given PID
+func GetSuccessor(self *Self, PID int) int {
+	PIDs, _ := extendedRing(self)
+	idx := index(PIDs, PID)
+	succIdx := (idx + 1) % len(PIDs)
+
+	return PIDs[succIdx] % (1 << self.M)
+}
+
+// Returns
+//   1. A "ring" of PIDs that wraps around itself that can be easily
+//      used to find successors and predecessors
+//        - Predecessor PID is PID directly behind the selfPID in the extended ring
+//        - Successor PID directly ahead, and so forth
+//   2. The index of the self node
+// Note: (1 << m == 2^m)
+func extendedRing(self *Self) ([]int, int) {
+	var PIDs []int
+	var PIDsExtended []int
+	SelfRWMutex.RLock()
+	defer SelfRWMutex.RUnlock()
+
+	for PID := range self.MemberMap {
+		PIDs = append(PIDs, PID)
+		PIDsExtended = append(PIDsExtended, PID+(1<<self.M))
+	}
+
+	PIDs = append(PIDs, PIDsExtended...)
+	sort.Ints(PIDs)
+	return PIDs, index(PIDs, self.PID)
+}
+
+func index(a []int, val int) int {
+	for i, v := range a {
+		if v == val {
+			return i
+		}
+	}
+	return -1
+}
