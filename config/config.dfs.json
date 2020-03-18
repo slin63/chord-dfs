@@ -2,7 +2,7 @@
     "Introducer": "introducer",
 
     "Prefix": "[DFS]",
-    "Filedir": "/temp/store/",
+    "Filedir": "/store/",
     "Logfile": "dfs.log",
     "LogfileClient": "dfs-client.log",
 

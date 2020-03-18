@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/rpc"
 	"strings"
@@ -34,21 +35,34 @@ func Parse(args []string) {
 	}
 
 	// Check input validity. If valid, send off to Raft for replication.
-	if _, _, ok := parser.ParseEntry(args); !ok {
+	method, _, ok := parser.ParseEntry(args)
+	if !ok {
 		fmt.Println("Invalid input!")
 		log.Fatal(helpS)
 		return
-	} else {
-		client, err := rpc.DialHTTP("tcp", "localhost:"+config.C.RaftRPCPort)
-		if err != nil {
-			log.Fatal("[ERROR] PutEntry() dialing:", err)
-		}
-
-		// PID of assigned server
-		var result *responses.Result
-		if err = client.Call("Ocean.PutEntry", strings.Join(args, " "), &result); err != nil {
-			log.Fatal(err)
-		}
-		log.Println(*result)
 	}
+
+	client, err := rpc.DialHTTP("tcp", "localhost:"+config.C.RaftRPCPort)
+	if err != nil {
+		log.Fatal("[ERROR] PutEntry() dialing:", err)
+	}
+
+	switch method {
+	case parser.PUT:
+		local := args[1]
+		f, err := ioutil.ReadFile(local)
+		if err != nil {
+			log.Fatal("[putArgs()]: ", err)
+		}
+		args = append(args, string(f))
+	default:
+		panic("TODO: Add more methods")
+	}
+
+	// PID of assigned server
+	var result *responses.Result
+	if err = client.Call("Ocean.PutEntry", strings.Join(args, " "), &result); err != nil {
+		log.Fatal(err)
+	}
+	log.Println(*result)
 }

@@ -33,3 +33,10 @@ func connect(PID int) *rpc.Client {
 
     return client
 }
+
+func tr(s string, max int) string {
+    if len(s) > max {
+        return s[0:max] + "..."
+    }
+    return s
+}
