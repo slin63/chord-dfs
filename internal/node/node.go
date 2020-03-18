@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 
@@ -21,6 +22,7 @@ var block = make(chan int, 1)
 
 // Maps filename to length of byte array
 var store = make(map[string]int)
+var storeRWMutex sync.RWMutex
 
 func Live() {
 	// Create directory for storing files

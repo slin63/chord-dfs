@@ -46,14 +46,9 @@ func callPutAssign(PID int, args *spec.PutArgs) {
 // Store that file on this machine and its replica nodes
 // Return a slice of PIDs of servers with that file
 func (f *Filesystem) PutAssign(args spec.PutArgs, replicas *[]int) error {
-	_putAssign(&args)
-	// TODO (02/25 @ 13:21): implement
-	return nil
-}
+	storeRWMutex.Lock()
+	defer storeRWMutex.Unlock()
 
-// Store the filename and data on this machine
-// Also dispatch RPC calls to replica nodes
-func _putAssign(args *spec.PutArgs) {
 	v, ok := store[args.Filename]
 	if ok {
 		config.LogIf(
@@ -69,4 +64,6 @@ func _putAssign(args *spec.PutArgs) {
 
 	// Actually write to filesystem
 	filesys.Write(args.Filename, args.Data)
+
+	return nil
 }

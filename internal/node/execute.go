@@ -14,9 +14,10 @@ import (
 func (f *Filesystem) Execute(entry string, result *responses.Result) error {
     config.LogIf(fmt.Sprintf("[EXECUTE] Executing %s", entry), config.C.LogExecute)
     method, args, ok := parser.ParseEntry(strings.Split(entry, " "))
+    methodS, _ := parser.MethodString(method)
     if ok {
         // Do some stuff
-        config.LogIf(fmt.Sprintf("[EXECUTE] [METHOD=%d] [ARGS=%v]", method, args), config.C.LogExecute)
+        config.LogIf(fmt.Sprintf("[EXECUTE] [METHOD=%s] [ARGS=%v]", methodS, args), config.C.LogExecute)
     }
     *result = responses.Result{Entry: entry, Success: true}
     return nil
