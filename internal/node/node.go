@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/slin63/chord-dfs/internal/config"
+	"github.com/slin63/chord-dfs/internal/filesys"
 	"github.com/slin63/chord-dfs/internal/spec"
 )
 
@@ -24,6 +25,9 @@ var block = make(chan int, 1)
 var store = make(map[string]int)
 var storeRWMutex sync.RWMutex
 
+// Queue of filesys writes
+var writes = make(chan spec.WriteCmd, 10)
+
 func Live() {
 	// Create directory for storing files
 	os.Mkdir(config.C.Filedir, 0644)
@@ -36,7 +40,15 @@ func Live() {
 	go serveFilesystemRPC()
 	go subscribeMembership()
 	go listenForLeave()
+	go digestWrites()
 	<-block
+}
+
+func digestWrites() {
+	for {
+		cmd := <-writes
+		filesys.Write(cmd.Name, cmd.Data)
+	}
 }
 
 // Periodically poll for membership information
