@@ -96,6 +96,9 @@ func _putAssign(args *spec.PutArgs) ([]int, error) {
 	// Update in memory store
 	store[args.Filename] = len(args.Data)
 
+	// Actually write to our own filesystem
+	writes <- spec.WriteCmd{Name: args.Filename, Data: args.Data}
+
 	// Dispatch to replicas IF we are the main target for this file sharding
 	if !args.Replicate {
 		return []int{}, nil
@@ -114,9 +117,6 @@ func _putAssign(args *spec.PutArgs) ([]int, error) {
 		}
 	}
 	spec.SelfRWMutex.RUnlock()
-
-	// Actually write to our own filesystem
-	writes <- spec.WriteCmd{Name: args.Filename, Data: args.Data}
 
 	// Watch for replicas coming in
 	for {
