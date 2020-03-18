@@ -2,15 +2,19 @@
     "Introducer": "introducer",
 
     "Prefix": "[DFS]",
-    "Filedir": "/store/",
     "Logfile": "dfs.log",
     "LogfileClient": "dfs-client.log",
 
     "LogPutAssign": true,
     "LogExecute": true,
+    "LogFileReplication": true,
+    "LogWrites": true,
+
+    "FilesystemRPCPort": "6005",
+    "Filedir": "/store/",
+    "Replicas": 2,
 
     "RaftRPCPort": "6004",
-    "FilesystemRPCPort": "6005",
     "RPCMaxRetries": 3,
     "RPCTimeout": 3,
     "RPCRetryInterval": 1,

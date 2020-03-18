@@ -44,6 +44,9 @@ type PutArgs struct {
 
 	// Server data
 	From int
+
+	// Whether or not this machine should replicate this file
+	Replicate bool
 }
 
 func ReportOnline() {

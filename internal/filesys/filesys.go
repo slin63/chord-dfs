@@ -2,6 +2,7 @@
 package filesys
 
 import (
+    "fmt"
     "io/ioutil"
     "log"
 
@@ -14,5 +15,13 @@ func Write(filename string, data []byte) int {
     if err != nil {
         log.Fatal(err)
     }
+    config.LogIf(
+        fmt.Sprintf(
+            "[WRITE] Wrote %s (%d bytes) to %s",
+            filename,
+            len(data),
+            config.C.Filedir+filename),
+        config.C.LogWrites,
+    )
     return len(data)
 }

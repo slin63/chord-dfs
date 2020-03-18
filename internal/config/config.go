@@ -18,15 +18,18 @@ type configParam struct {
 	// Quorum            float64
 
 	// Logging
-	Prefix        string
-	Logfile       string
-	LogfileClient string
-	LogPutAssign  bool
-	LogExecute    bool
+	Prefix             string
+	Logfile            string
+	LogfileClient      string
+	LogPutAssign       bool
+	LogExecute         bool
+	LogFileReplication bool
+	LogWrites          bool
 
 	// Filesystem
 	FilesystemRPCPort string
 	Filedir           string
+	Replicas          int
 
 	// Consensus layer
 	RaftRPCPort string

@@ -2,6 +2,7 @@
 package node
 
 import (
+    "encoding/json"
     "fmt"
     "log"
     "strings"
@@ -23,7 +24,8 @@ func (f *Filesystem) Execute(entry string, result *responses.Result) error {
 
     // Actually execute the method with the arguments as identified by parser.ParseEntry
     execute(method, args, result)
-    *result = responses.Result{Entry: entry, Success: true}
+    result.Entry = entry
+
     return nil
 }
 
@@ -33,11 +35,20 @@ func execute(method parser.MethodType, args []string, result *responses.Result) 
     var b []byte = []byte(args[2])
     switch method {
     case parser.PUT:
-        Put(&spec.PutArgs{sdfs, b, spec.NILPID})
+        replicas := Put(&spec.PutArgs{
+            Filename:  sdfs,
+            Data:      b,
+            From:      spec.NILPID,
+            Replicate: true,
+        })
+        data, err := json.Marshal(replicas)
+        if err != nil {
+            log.Fatal("[execute()] Error while marshaling response data:", err)
+        }
+        *result = responses.Result{Success: true, Data: string(data)}
     default:
         panic("TODO: Add the other methods")
     }
     config.LogIf(fmt.Sprintf("[EXECUTE] [METHOD=%s] [ARGS=%v %v %v]", methodS, args[0], args[1], tr(args[2], 20)), config.C.LogExecute)
-
     return nil
 }
