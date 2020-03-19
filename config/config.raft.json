@@ -22,6 +22,7 @@
 
     "LogDigestEntries": true,
     "LogDigestCommits": true,
+    "LogDigestEntriesVerbose": false,
 
     "RPCPort": "6004",
     "RPCMaxRetries": 3,

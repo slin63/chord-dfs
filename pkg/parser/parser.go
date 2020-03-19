@@ -31,21 +31,34 @@ func MethodString(method MethodType) (string, bool) {
 // Make sure that the entry is a valid command
 func ParseEntry(args []string) (MethodType, []string, bool) {
     cleanTerm(args)
-    switch strings.ToLower(args[0]) {
+    method := args[0]
+    args = args[1:]
+    switch strings.ToLower(method) {
     case "put":
-        if len(args) < 3 {
-            return 0, args[1:], false
+        if len(args) < 2 {
+            return 0, args, false
         }
-        return PUT, args[1:], true
+        return PUT, cleanData(args, 2), true
     case "get":
         log.Println("get")
-        return 0, args[1:], false
+        return 0, args, false
     case "delete":
         log.Println("delete")
-        return 0, args[1:], false
+        return 0, args, false
     default:
-        return 0, args[1:], false
+        return 0, args, false
     }
+}
+
+// Sometimes file data that has whitespace in it is split into multiple arguments.
+// We can use this function to rejoin that split data.
+//   start :: the first index of the data that was wrongly split into multiple indices
+func cleanData(args []string, start int) []string {
+    if len(args) > start {
+        args[start] = strings.Join(args[start:], " ")
+        args = args[0 : start+1]
+    }
+    return args
 }
 
 // Return args without a term if a term is present
