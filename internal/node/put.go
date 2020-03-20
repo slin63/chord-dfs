@@ -43,7 +43,7 @@ func Put(args *spec.PutArgs) []int {
 
 	// Dispatch PutAssign RPC or perform on self
 	if PID != self.PID {
-		return []int{callPutAssign(PID, args)}
+		return callPutAssign(PID, args)
 	}
 	replicas, err := _putAssign(args)
 	if err != nil {
@@ -54,7 +54,7 @@ func Put(args *spec.PutArgs) []int {
 }
 
 // PutAssign (initiates PutAssign RPC on given PID)
-func callPutAssign(PID int, args *spec.PutArgs) int {
+func callPutAssign(PID int, args *spec.PutArgs) []int {
 	client := connect(PID)
 	defer client.Close()
 
@@ -62,7 +62,10 @@ func callPutAssign(PID int, args *spec.PutArgs) int {
 	if err := (*client).Call("Filesystem.PutAssign", *args, &replicas); err != nil {
 		log.Fatal(err)
 	}
-	return PID
+	if len(replicas) == 0 {
+		replicas = append(replicas, PID)
+	}
+	return replicas
 }
 
 // PutAssign (receive RPC) (from: another server)
@@ -112,17 +115,17 @@ func _putAssign(args *spec.PutArgs) ([]int, error) {
 		return []int{}, nil
 	}
 
-	replicaCh := make(chan int)
+	replicaCh := make(chan []int)
 	replicas := []int{}
-	replicasExpected := 0
 	targetPID := self.PID
 	spec.SelfRWMutex.RLock()
 	for i := 0; i < config.C.Replicas; i++ {
 		targetPID = spec.GetSuccessor(&self, targetPID)
-		if targetPID != self.PID {
-			go dispatchReplica(targetPID, args, replicaCh)
-			replicasExpected++
+		if targetPID == self.PID {
+			i--
+			continue
 		}
+		go dispatchReplica(targetPID, args, replicaCh)
 	}
 	spec.SelfRWMutex.RUnlock()
 
@@ -130,8 +133,8 @@ func _putAssign(args *spec.PutArgs) ([]int, error) {
 	for {
 		select {
 		case replica := <-replicaCh:
-			replicas = append(replicas, replica)
-			if len(replicas) == replicasExpected {
+			replicas = append(replicas, replica...)
+			if len(replicas) == config.C.Replicas {
 				// Also include this node's self PID in the list of replicas.
 				replicas = append(replicas, self.PID)
 				return replicas, nil
@@ -143,7 +146,7 @@ func _putAssign(args *spec.PutArgs) ([]int, error) {
 }
 
 // Try and replicate the file inside args onto server PID.
-func dispatchReplica(PID int, args *spec.PutArgs, resp chan<- int) {
+func dispatchReplica(PID int, args *spec.PutArgs, resp chan<- []int) {
 	args.From = self.PID
 	args.Replicate = false
 	select {
