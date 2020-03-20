@@ -68,9 +68,17 @@ func Parse(args []string) {
 	}
 
 	if !result.Success {
-		log.Println("Something went wrong inside the massive black box. Sorry!")
+		log.Printf("Something went wrong inside the massive black box. Sorry!\n\terrcode: %d", result.Error)
 		return
 	}
 
-	log.Printf("Success!\n\tExecuted %s on %s.\n\tResult: [%s]", methodS, local, result.Data)
+	resultsFormattedS := "Result: %s\n\tEntry: %s"
+	resultsFormatted := fmt.Sprintf(resultsFormattedS, result.Data, formatEntry(result.Entry))
+	log.Printf("Success!\n\tExecuted %s on %s.\n\t%s", methodS, local, resultsFormatted)
+}
+
+func formatEntry(s string) string {
+	s = strings.ReplaceAll(s, "\n", "; ")
+	s = s[0:40] + " ... "
+	return s
 }
