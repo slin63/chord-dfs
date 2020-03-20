@@ -40,3 +40,7 @@ func tr(s string, max int) string {
     }
     return s
 }
+
+func trb(b []byte, max int) string {
+    return tr(string(b), max)
+}

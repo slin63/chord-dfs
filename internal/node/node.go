@@ -22,7 +22,7 @@ var self spec.Self
 var block = make(chan int, 1)
 
 // Maps filename to length of byte array
-var store = make(map[string]int)
+var store = make(map[string][]byte)
 var storeRWMutex sync.RWMutex
 
 // Queue of filesys writes

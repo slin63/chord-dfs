@@ -2,6 +2,7 @@
 package node
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"log"
@@ -83,21 +84,28 @@ func _putAssign(args *spec.PutArgs) ([]int, error) {
 	storeRWMutex.Lock()
 	defer storeRWMutex.Unlock()
 
+	bhash := hashing.BHash(args.Data)
+	// Check if file with same name already in store
 	v, ok := store[args.Filename]
-	if ok {
-		config.LogIf(
-			fmt.Sprintf("[PUT] Updating %s:%d -> %d", args.Filename, v, len(args.Data)), config.C.LogPutAssign,
-		)
-	} else {
+	if !ok {
 		config.LogIf(
 			fmt.Sprintf("[PUT] Setting %s:%d", args.Filename, len(args.Data)), config.C.LogPutAssign,
 		)
+		writes <- spec.WriteCmd{Name: args.Filename, Data: args.Data}
+		store[args.Filename] = bhash
+	} else {
+		if !bytes.Equal(v, bhash) {
+			config.LogIf(
+				fmt.Sprintf("[PUT] Updating %s -> %s", args.Filename, trb(v, 20)), config.C.LogPutAssign,
+			)
+			writes <- spec.WriteCmd{Name: args.Filename, Data: args.Data}
+			store[args.Filename] = bhash
+		} else {
+			config.LogIf(
+				fmt.Sprintf("[PUT] File already present; skipping %s:%d", args.Filename, len(args.Data)), config.C.LogPutAssign,
+			)
+		}
 	}
-	// Update in memory store
-	store[args.Filename] = len(args.Data)
-
-	// Actually write to our own filesystem
-	writes <- spec.WriteCmd{Name: args.Filename, Data: args.Data}
 
 	// Dispatch to replicas IF we are the main target for this file sharding
 	if !args.Replicate {
