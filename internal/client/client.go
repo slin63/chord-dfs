@@ -31,6 +31,7 @@ const helpS = `Available operations:
 func Parse(args []string) {
 	var methodS string
 	var local string
+	var sdfs string
 	if len(args) == 0 {
 		fmt.Println(helpS)
 		return
@@ -59,6 +60,8 @@ func Parse(args []string) {
 		args = append(args, string(f))
 		methodS, _ = parser.MethodString(parser.PUT)
 	case parser.GET:
+		sdfs = args[1]
+		local = args[2]
 		methodS, _ = parser.MethodString(parser.GET)
 	default:
 		panic("TODO: Add more methods")
@@ -75,14 +78,24 @@ func Parse(args []string) {
 	}
 
 	resultsFormattedS := "Result: %s\n\tEntry: %s"
-	resultsFormatted := fmt.Sprintf(resultsFormattedS, result.Data, formatEntry(result.Entry))
+	resultsFormatted := fmt.Sprintf(resultsFormattedS, formatEntry(result.Data), formatEntry(result.Entry))
 	log.Printf("Success!\n\tExecuted %s.\n\t%s", methodS, resultsFormatted)
+
+	// Write to local file system
+	if method == parser.GET {
+		err := ioutil.WriteFile(local, []byte(result.Data), 0644)
+		if err != nil {
+			log.Fatalf("Error trying to write file to local filesystem: %v", err)
+		}
+
+		log.Printf("Wrote [SDFS=%s] to [LOCAL=%s].", sdfs, local)
+	}
 }
 
 func formatEntry(s string) string {
 	s = strings.ReplaceAll(s, "\n", "; ")
 	if len(s) > 40 {
-		s = s[0:40] + " ... "
+		s = s[0:40] + " ... " + fmt.Sprintf("(+%d)", len(s)-40)
 	}
 	return s
 }
