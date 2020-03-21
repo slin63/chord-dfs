@@ -31,10 +31,10 @@ func (f *Filesystem) Execute(entry string, result *responses.Result) error {
 
 func execute(method parser.MethodType, args []string, result *responses.Result) error {
     methodS, _ := parser.MethodString(method)
-    var sdfs string = args[1]
-    var b []byte = []byte(args[2])
     switch method {
     case parser.PUT:
+        sdfs := args[1]
+        b := []byte(args[2])
         replicas := Put(&spec.PutArgs{
             Filename:  sdfs,
             Data:      b,
@@ -46,9 +46,16 @@ func execute(method parser.MethodType, args []string, result *responses.Result) 
             log.Fatal("[execute()] Error while marshaling response data:", err)
         }
         *result = responses.Result{Success: true, Data: string(data)}
+    case parser.GET:
+        sdfs := args[0]
+        data, err := Get(&spec.GetArgs{Filename: sdfs})
+        *result = responses.Result{Success: true, Data: string(data)}
+        if err != nil {
+            *result = responses.Result{Success: false, Error: responses.FILENOTFOUND}
+        }
     default:
         panic("TODO: Add the other methods")
     }
-    config.LogIf(fmt.Sprintf("[EXECUTE] [METHOD=%s] [ARGS=%v %v %v]", methodS, args[0], args[1], tr(args[2], 20)), config.C.LogExecute)
+    config.LogIf(fmt.Sprintf("[EXECUTE] [METHOD=%s] [ARGS=%s]", methodS, tr(strings.Join(args, " "), 40)), config.C.LogExecute)
     return nil
 }

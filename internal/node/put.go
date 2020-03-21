@@ -31,7 +31,7 @@ import (
 //                 -> Return result to Execute, Execute returns result to Raft leader
 //                    -> Raft leader returns result to Client 🥳
 
-// Put (function to initiate PUT action) (from: client)
+// Put (function to initiate PUT action) (from: execute/client)
 //   - Hash the file onto some appropriate point on the ring.
 //   - Message that point on the ring with the filename and data.
 //   - Respond to the client with the process ID of the server that was selected.
@@ -39,7 +39,6 @@ func Put(args *spec.PutArgs) []int {
 	// Identify PID of server to give file to by calculating file's hash (FPID)
 	FPID := hashing.MHash(args.Filename, self.M)
 	PID := spec.NearestPID(FPID, &self)
-	args.From = self.PID
 
 	// Dispatch PutAssign RPC or perform on self
 	if PID != self.PID {
@@ -147,7 +146,6 @@ func _putAssign(args *spec.PutArgs) ([]int, error) {
 
 // Try and replicate the file inside args onto server PID.
 func dispatchReplica(PID int, args *spec.PutArgs, resp chan<- []int) {
-	args.From = self.PID
 	args.Replicate = false
 	select {
 	case resp <- callPutAssign(PID, args):

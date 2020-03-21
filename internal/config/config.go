@@ -11,11 +11,6 @@ import (
 type configParam struct {
 	// Protocol
 	Introducer string
-	// ElectTimeoutMin   int
-	// ElectTimeoutMax   int
-	// HeartbeatInterval int
-	// Timescale         int
-	// Quorum            float64
 
 	// Logging
 	Prefix             string
@@ -25,6 +20,7 @@ type configParam struct {
 	LogExecute         bool
 	LogFileReplication bool
 	LogWrites          bool
+	LogReads           bool
 
 	// Filesystem
 	FilesystemRPCPort string

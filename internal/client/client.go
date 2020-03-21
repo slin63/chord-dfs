@@ -58,6 +58,8 @@ func Parse(args []string) {
 		}
 		args = append(args, string(f))
 		methodS, _ = parser.MethodString(parser.PUT)
+	case parser.GET:
+		methodS, _ = parser.MethodString(parser.GET)
 	default:
 		panic("TODO: Add more methods")
 	}
@@ -74,11 +76,13 @@ func Parse(args []string) {
 
 	resultsFormattedS := "Result: %s\n\tEntry: %s"
 	resultsFormatted := fmt.Sprintf(resultsFormattedS, result.Data, formatEntry(result.Entry))
-	log.Printf("Success!\n\tExecuted %s on %s.\n\t%s", methodS, local, resultsFormatted)
+	log.Printf("Success!\n\tExecuted %s.\n\t%s", methodS, resultsFormatted)
 }
 
 func formatEntry(s string) string {
 	s = strings.ReplaceAll(s, "\n", "; ")
-	s = s[0:40] + " ... "
+	if len(s) > 40 {
+		s = s[0:40] + " ... "
+	}
 	return s
 }

@@ -25,3 +25,18 @@ func Write(filename string, data []byte) int {
     )
     return len(data)
 }
+
+func Read(filename string) []byte {
+    data, err := ioutil.ReadFile(config.C.Filedir + filename)
+    if err != nil {
+        log.Fatal(err)
+    }
+    config.LogIf(
+        fmt.Sprintf(
+            "[WRITE] Read %s (%d bytes)",
+            filename,
+            len(data)),
+        config.C.LogReads,
+    )
+    return data
+}

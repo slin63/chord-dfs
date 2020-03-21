@@ -36,19 +36,6 @@ type Self struct {
 	SuspicionMap SuspicionMapT
 }
 
-// DFS RPCs
-type PutArgs struct {
-	// File data
-	Filename string
-	Data     []byte
-
-	// Server data
-	From int
-
-	// Whether or not this machine should replicate this file
-	Replicate bool
-}
-
 func ReportOnline() {
 	log.Printf("[ONLINE]")
 }

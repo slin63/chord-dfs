@@ -8,6 +8,7 @@
     "LogPutAssign": true,
     "LogExecute": true,
     "LogFileReplication": true,
+    "LogReads": true,
     "LogWrites": true,
 
     "FilesystemRPCPort": "6005",

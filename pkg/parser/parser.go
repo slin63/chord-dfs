@@ -29,6 +29,12 @@ func MethodString(method MethodType) (string, bool) {
 }
 
 // Make sure that the entry is a valid command
+// Available operations:
+//   1. put localfilename sdfsfilename (from local dir)
+//   2. get sdfsfilename localfilename (fetches to local dir)
+//   3. delete sdfsfilename
+//   4. ls filename (list all machines where this data is stored)
+//   5. store (list all files stored on this machine)
 func ParseEntry(args []string) (MethodType, []string, bool) {
     cleanTerm(args)
     method := args[0]
@@ -40,8 +46,10 @@ func ParseEntry(args []string) (MethodType, []string, bool) {
         }
         return PUT, cleanData(args, 2), true
     case "get":
-        log.Println("get")
-        return 0, args, false
+        if len(args) < 2 {
+            return 0, args, false
+        }
+        return GET, args, true
     case "delete":
         log.Println("delete")
         return 0, args, false
