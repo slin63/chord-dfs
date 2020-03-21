@@ -17,7 +17,7 @@ import (
 //   1. Client passes entry to Raft leader
 //   2. Raft leader replicates entry and passes back to Filesystem.Execute RPC
 
-// Get (function to initiate PUT action) (from: execute/client)
+// Get (function to initiate GET action) (from: execute/client)
 //   - Check if the file is stored on this machine. If so, just return it.
 //   - Hash the file onto some appropriate PID on the ring.
 //   - Message that PID on the ring  with the filename.
@@ -41,8 +41,8 @@ func Get(args *spec.GetArgs) ([]byte, error) {
 	FPID := hashing.MHash(args.Filename, self.M)
 	PID := spec.NearestPID(FPID, &self)
 
-	// Dispatch PutAssign RPC or perform on self
-	// TODO (03/20 @ 16:50): Implement trying successors if this times out
+	// Dispatch GetRespond RPC to target node, dispatch to that node's successors
+	// if that node doesn't respond
 	client, err = connectTimeout(PID, config.C.RPCTimeout)
 	if err != nil {
 		config.LogIf(
