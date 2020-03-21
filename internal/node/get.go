@@ -5,7 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/rpc"
 
+	"github.com/slin63/chord-dfs/internal/config"
 	"github.com/slin63/chord-dfs/internal/filesys"
 	"github.com/slin63/chord-dfs/internal/hashing"
 	"github.com/slin63/chord-dfs/internal/spec"
@@ -24,6 +26,9 @@ import (
 //   - If it's dead:
 //     - Try checking its two successors until one of them responds
 func Get(args *spec.GetArgs) ([]byte, error) {
+	var client *rpc.Client
+	var err error
+
 	// Just return this file if we have it
 	spec.SelfRWMutex.RLock()
 	_, ok := store[args.Filename]
@@ -38,14 +43,28 @@ func Get(args *spec.GetArgs) ([]byte, error) {
 
 	// Dispatch PutAssign RPC or perform on self
 	// TODO (03/20 @ 16:50): Implement trying successors if this times out
-	return callGet(PID, args)
+	client, err = connectTimeout(PID, config.C.RPCTimeout)
+	if err != nil {
+		config.LogIf(
+			fmt.Sprintf("[GET-X] [PID=%d] Not responding. Trying %d successors.", PID, config.C.Replicas),
+			config.C.LogGet)
+		for i := 0; i < config.C.Replicas; i++ {
+			PID = spec.GetSuccessor(&self, PID)
+			config.LogIf(
+				fmt.Sprintf("[GET] Trying replica at [PID=%d]", PID),
+				config.C.LogGet)
+			client, err = connectTimeout(PID, config.C.RPCTimeout)
+			if err == nil {
+				break
+			}
+		}
+	}
+	defer client.Close()
+	return callGet(PID, args, client)
 }
 
 // callGet (initiates GetRespond RPC on given PID)
-func callGet(PID int, args *spec.GetArgs) ([]byte, error) {
-	client := connect(PID)
-	defer client.Close()
-
+func callGet(PID int, args *spec.GetArgs, client *rpc.Client) ([]byte, error) {
 	var data []byte
 	if err := (*client).Call("Filesystem.GetRespond", *args, &data); err != nil {
 		log.Printf("[CALLGET-X] Error while retrieving file from [PID=%d]: %v", PID, err)

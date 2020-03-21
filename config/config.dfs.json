@@ -10,6 +10,7 @@
     "LogFileReplication": true,
     "LogReads": true,
     "LogWrites": true,
+    "LogGet": true,
 
     "FilesystemRPCPort": "6005",
     "Filedir": "/store/",

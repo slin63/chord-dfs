@@ -54,7 +54,10 @@ func Put(args *spec.PutArgs) []int {
 
 // PutAssign (initiates PutAssign RPC on given PID)
 func callPutAssign(PID int, args *spec.PutArgs) []int {
-	client := connect(PID)
+	client, err := connect(PID)
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer client.Close()
 
 	var replicas []int

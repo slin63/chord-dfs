@@ -21,6 +21,7 @@ type configParam struct {
 	LogFileReplication bool
 	LogWrites          bool
 	LogReads           bool
+	LogGet             bool
 
 	// Filesystem
 	FilesystemRPCPort string
