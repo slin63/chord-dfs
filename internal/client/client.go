@@ -13,7 +13,7 @@ import (
 	"github.com/slin63/raft-consensus/pkg/responses"
 )
 
-const helpS = `Available operations:
+const HelpS = `Available operations:
 1. put localfilename sdfsfilename (from local dir)
 2. get sdfsfilename localfilename (fetches to local dir)
 3. delete sdfsfilename
@@ -33,7 +33,7 @@ func Parse(args []string) {
 	var local string
 	var sdfs string
 	if len(args) == 0 {
-		fmt.Println(helpS)
+		fmt.Println(HelpS)
 		return
 	}
 
@@ -41,7 +41,7 @@ func Parse(args []string) {
 	method, _, ok := parser.ParseEntry(args)
 	if !ok {
 		fmt.Println("Invalid input!")
-		log.Fatal(helpS)
+		log.Fatal(HelpS)
 		return
 	}
 

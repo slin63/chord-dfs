@@ -2,8 +2,11 @@
 package main
 
 import (
+    "bufio"
+    "fmt"
     "log"
     "os"
+    "strings"
 
     "github.com/slin63/chord-dfs/internal/client"
     "github.com/slin63/chord-dfs/internal/config"
@@ -17,5 +20,25 @@ func main() {
         log.Fatalf("error opening file: %v", err)
     }
     defer f.Close()
+
+    s := bufio.NewScanner(os.Stdin)
+    w := os.Stdout
+    fmt.Fprint(w, client.HelpS+"\n")
+    for {
+        fmt.Fprint(w, "> ")
+        s.Scan() // get next the token
+        switch s.Text() {
+        case "!ls":
+            log.Printf("!ls hehe")
+        default:
+            client.Parse(strings.Split(s.Text(), " "))
+        }
+
+        // todo:
+        // system-level "ls"
+        // don't crash on errors
+        // handle arrow key inputs and normal editing
+    }
+
     client.Parse(os.Args[1:])
 }
