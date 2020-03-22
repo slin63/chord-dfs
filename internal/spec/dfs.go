@@ -22,3 +22,8 @@ type GetArgs struct {
     // File data
     Filename string
 }
+
+type DeleteArgs struct {
+    // File data
+    Filename string
+}

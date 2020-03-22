@@ -22,6 +22,8 @@ func serveFilesystemRPC() {
     http.Serve(l, nil)
 }
 
+// Attempts connecting within a certain timeout window.
+// Returns an err if that window isn't met
 func connectTimeout(PID, timeout int) (*rpc.Client, error) {
     var client *rpc.Client
     c := make(chan *rpc.Client)

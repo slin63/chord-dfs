@@ -1,4 +1,3 @@
-// Client and server stubs for RPCs.
 package node
 
 import (

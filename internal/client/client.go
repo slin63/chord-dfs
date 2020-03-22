@@ -63,6 +63,9 @@ func Parse(args []string) {
 		sdfs = args[1]
 		local = args[2]
 		methodS, _ = parser.MethodString(parser.GET)
+	case parser.DELETE:
+		sdfs = args[1]
+		methodS, _ = parser.MethodString(parser.DELETE)
 	default:
 		panic("TODO: Add more methods")
 	}

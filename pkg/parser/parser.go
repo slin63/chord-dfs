@@ -2,7 +2,6 @@
 package parser
 
 import (
-    "log"
     "strconv"
     "strings"
 )
@@ -51,8 +50,10 @@ func ParseEntry(args []string) (MethodType, []string, bool) {
         }
         return GET, args, true
     case "delete":
-        log.Println("delete")
-        return 0, args, false
+        if len(args) < 1 {
+            return 0, args, false
+        }
+        return DELETE, args, true
     default:
         return 0, args, false
     }

@@ -30,9 +30,9 @@ func Get(args *spec.GetArgs) ([]byte, error) {
 	var err error
 
 	// Just return this file if we have it
-	spec.SelfRWMutex.RLock()
+	storeRWMutex.RLock()
 	_, ok := store[args.Filename]
-	spec.SelfRWMutex.RUnlock()
+	storeRWMutex.RUnlock()
 	if ok {
 		return filesys.Read(args.Filename), nil
 	}
@@ -80,9 +80,9 @@ func callGet(PID int, args *spec.GetArgs, client *rpc.Client) ([]byte, error) {
 // Return a slice of PIDs of servers with that file
 func (f *Filesystem) GetRespond(args spec.GetArgs, data *[]byte) error {
 	// Just return this file if we have it
-	spec.SelfRWMutex.RLock()
+	storeRWMutex.RLock()
 	_, ok := store[args.Filename]
-	spec.SelfRWMutex.RUnlock()
+	storeRWMutex.RUnlock()
 	if ok {
 		*data = filesys.Read(args.Filename)
 		return nil

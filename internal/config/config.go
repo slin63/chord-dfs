@@ -13,15 +13,20 @@ type configParam struct {
 	Introducer string
 
 	// Logging
-	Prefix             string
+	Prefix string
+
 	Logfile            string
 	LogfileClient      string
-	LogPutAssign       bool
 	LogExecute         bool
 	LogFileReplication bool
-	LogWrites          bool
-	LogReads           bool
-	LogGet             bool
+
+	LogWrites  bool
+	LogDeletes bool
+	LogReads   bool
+
+	LogPutAssign bool
+	LogDelete    bool
+	LogGet       bool
 
 	// Filesystem
 	FilesystemRPCPort string
@@ -35,6 +40,10 @@ type configParam struct {
 	RPCMaxRetries    int
 	RPCTimeout       int
 	RPCRetryInterval int
+
+	// Retries
+	RetryAttempts int
+	RetryInterval int
 
 	// Membership layer
 	MemberRPCPort          string

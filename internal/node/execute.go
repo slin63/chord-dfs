@@ -53,6 +53,13 @@ func execute(method parser.MethodType, args []string, result *responses.Result) 
         if err != nil {
             *result = responses.Result{Success: false, Error: responses.FILENOTFOUND}
         }
+    case parser.DELETE:
+        sdfs := args[0]
+        err := Delete(&spec.DeleteArgs{Filename: sdfs})
+        *result = responses.Result{Success: true, Data: sdfs}
+        if err != nil {
+            *result = responses.Result{Success: false, Error: responses.FILENOTFOUND}
+        }
     default:
         panic("TODO: Add the other methods")
     }

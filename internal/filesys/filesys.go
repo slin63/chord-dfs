@@ -5,6 +5,7 @@ import (
     "fmt"
     "io/ioutil"
     "log"
+    "os"
 
     "github.com/slin63/chord-dfs/internal/config"
 )
@@ -39,4 +40,14 @@ func Read(filename string) []byte {
         config.C.LogReads,
     )
     return data
+}
+
+func Remove(filename string) error {
+    config.LogIf(
+        fmt.Sprintf(
+            "[DELETE] Removed %s",
+            filename),
+        config.C.LogDeletes,
+    )
+    return os.Remove(config.C.Filedir + filename)
 }

@@ -1,4 +1,3 @@
-// Stuff the server needs to do to stay alive and do its job.
 package node
 
 import (

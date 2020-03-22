@@ -5,11 +5,15 @@
     "Logfile": "dfs.log",
     "LogfileClient": "dfs-client.log",
 
-    "LogPutAssign": true,
     "LogExecute": true,
     "LogFileReplication": true,
+
     "LogReads": true,
     "LogWrites": true,
+    "LogDeletes": true,
+
+    "LogPutAssign": true,
+    "LogDelete": true,
     "LogGet": true,
 
     "FilesystemRPCPort": "6005",
@@ -17,6 +21,7 @@
     "Replicas": 2,
 
     "RaftRPCPort": "6004",
+
     "RPCMaxRetries": 3,
     "RPCTimeout": 3,
     "RPCRetryInterval": 1,
