@@ -13,6 +13,7 @@ const (
     GET
     DELETE
     LS
+    STORE
 )
 
 func MethodString(method MethodType) (string, bool) {
@@ -25,6 +26,8 @@ func MethodString(method MethodType) (string, bool) {
         return "DELETE", true
     case LS:
         return "LS", true
+    case STORE:
+        return "STORE", true
     default:
         return "", false
     }
@@ -62,6 +65,11 @@ func ParseEntry(args []string) (MethodType, []string, bool) {
             return 0, args, false
         }
         return LS, args, true
+    case "store":
+        if len(args) < 1 {
+            return 0, args, false
+        }
+        return STORE, args, true
     default:
         return 0, args, false
     }

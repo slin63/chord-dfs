@@ -72,6 +72,9 @@ func Parse(args []string) {
 	case parser.LS:
 		sdfs = args[1]
 		methodS, _ = parser.MethodString(parser.LS)
+	case parser.STORE:
+		sdfs = args[1]
+		methodS, _ = parser.MethodString(parser.STORE)
 	default:
 		panic("TODO: Add more methods")
 	}
