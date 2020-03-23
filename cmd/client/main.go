@@ -6,6 +6,7 @@ import (
     "fmt"
     "log"
     "os"
+    "os/exec"
     "strings"
 
     "github.com/slin63/chord-dfs/internal/client"
@@ -27,15 +28,20 @@ func main() {
     for {
         fmt.Fprint(w, "> ")
         s.Scan() // get next the token
-        switch s.Text() {
+        switch strings.ToLower(s.Text()) {
         case "!ls":
-            log.Printf("!ls hehe")
+            b, err := exec.Command("ls").Output()
+            if err != nil {
+                log.Fatal(err)
+            }
+            fmt.Fprint(w, string(b))
+        case "":
+            continue
         default:
             client.Parse(strings.Split(s.Text(), " "))
         }
 
         // todo:
-        // system-level "ls"
         // don't crash on errors
         // handle arrow key inputs and normal editing
     }

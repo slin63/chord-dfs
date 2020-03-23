@@ -1,7 +1,4 @@
 # Binaries for programs and plugins
-membership
-server
-client
 *.exe
 *.exe~
 *.dll

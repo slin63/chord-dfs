@@ -1,5 +1,6 @@
 {
     "Introducer": "introducer",
+    "ServerPrefix": "chord-dfs_worker_",
 
     "Prefix": "[DFS]",
     "Logfile": "dfs.log",

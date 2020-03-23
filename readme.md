@@ -9,9 +9,10 @@ TODO: Link blog post here.
 1. `docker-compose build && docker-compose up --remove-orphans --scale worker=<worker_count>`
     - Start 1 + `worker_count` nodes.
     - Recommended `worker_count ~= 5`. CPU utilization is high across all three components so expect some sluggishness.
-2. Run client with
-    - `CONFIG=$(pwd)/config/config.dfs.json go run ./cmd/client/main.go put go.mod sdfs-gomod`.
-    - `CONFIG=$(pwd)/config/config.dfs.json go run ./cmd/client/main.go get sdfs-gomod test/hello`.
+2. Build & run client with
+    - `docker build --tag client . -f ./dockerfiles/client/Dockerfile; docker run --rm -it client /bin/sh -c ./dfs`
+    - `> put go.mod remote`.
+    - `> get remote local`.
     -  Available client commands listed below in _Client Commands_.
 
 #### Configuration
