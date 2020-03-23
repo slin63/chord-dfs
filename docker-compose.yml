@@ -1,6 +1,5 @@
 version: '3'
 
-# All of these servers should have their ports exposed, but because we're using --scale we're not going to.
 services:
   introducer:
     container_name: introducer
@@ -8,8 +7,7 @@ services:
       - INTRODUCER=1
     build:
       context: .
-      dockerfile: dockerfiles/all/Dockerfile
-
+      dockerfile: dockerfiles/introducer/Dockerfile
 
   worker:
     depends_on:

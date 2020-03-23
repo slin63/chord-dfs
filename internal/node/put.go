@@ -77,7 +77,7 @@ func (f *Filesystem) PutAssign(args spec.PutArgs, replicas *[]int) error {
 	var err error
 	*replicas, err = _putAssign(&args)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	return nil
 }

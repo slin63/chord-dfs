@@ -1,0 +1,38 @@
+{
+    "Introducer": "introducer",
+    "ElectTimeoutMin": 9999,
+    "ElectTimeoutMax": 10000,
+    "HeartbeatInterval": 375,
+    "Timescale": 1,
+    "Quorum": 0.6,
+
+    "Prefix": "[RAFT]",
+    "Logfile": "raft.log",
+    "LogMembership": false,
+    "LogGoroutines": false,
+
+    "LogHeartbeats": false,
+    "LogHeartbeatsLead": false,
+    "LogAppendEntries": true,
+    "LogPutEntry": true,
+    "LogConflictingEntries": true,
+
+    "LogConnections": false,
+    "LogTimers": false,
+    "LogElections": true,
+
+    "LogDigestEntries": true,
+    "LogDigestCommits": true,
+    "LogDigestEntriesVerbose": false,
+
+    "RPCPort": "6004",
+    "RPCMaxRetries": 3,
+    "RPCTimeout": 3,
+    "RPCRetryInterval": 1,
+    "FilesystemRPCPort": "6005",
+
+    "MemberRPCPort": "6002",
+    "MemberRPCRetryInterval": 3,
+    "MemberRPCRetryMax": 5,
+    "MemberInterval": 2
+}

@@ -34,7 +34,7 @@ func Read(filename string) []byte {
     }
     config.LogIf(
         fmt.Sprintf(
-            "[WRITE] Read %s (%d bytes)",
+            "[READ] Read %s (%d bytes)",
             filename,
             len(data)),
         config.C.LogReads,
