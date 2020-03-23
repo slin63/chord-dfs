@@ -41,13 +41,13 @@ func Parse(args []string) {
 	method, _, ok := parser.ParseEntry(args)
 	if !ok {
 		fmt.Println("Invalid input!")
-		log.Fatal(HelpS)
+		fmt.Println(HelpS)
 		return
 	}
 
-	client, err := rpc.DialHTTP("tcp", "localhost:"+config.C.RaftRPCPort)
+	client, err := rpc.DialHTTP("tcp", "172.21.0.2:"+config.C.RaftRPCPort)
 	if err != nil {
-		log.Fatal("[ERROR] PutEntry() dialing:", err)
+		fmt.Println("[ERROR] PutEntry() dialing:", err)
 	}
 
 	switch method {
@@ -55,7 +55,7 @@ func Parse(args []string) {
 		local = args[1]
 		f, err := ioutil.ReadFile(local)
 		if err != nil {
-			log.Fatal("[putArgs()]: ", err)
+			fmt.Println("[putArgs()]: ", err)
 		}
 		args = append(args, string(f))
 		methodS, _ = parser.MethodString(parser.PUT)
@@ -72,11 +72,11 @@ func Parse(args []string) {
 
 	var result *responses.Result
 	if err = client.Call("Ocean.PutEntry", strings.Join(args, " "), &result); err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 
 	if !result.Success {
-		log.Printf("Something went wrong inside the massive black box. Sorry!\n\terrcode: %d", result.Error)
+		fmt.Printf("Something went wrong inside the massive black box. Sorry!\n\terrcode: %d", result.Error)
 		return
 	}
 
@@ -88,7 +88,7 @@ func Parse(args []string) {
 	if method == parser.GET {
 		err := ioutil.WriteFile(local, []byte(result.Data), 0644)
 		if err != nil {
-			log.Fatalf("Error trying to write file to local filesystem: %v", err)
+			fmt.Printf("Error trying to write file to local filesystem: %v", err)
 		}
 
 		log.Printf("Wrote [SDFS=%s] to [LOCAL=%s].", sdfs, local)

@@ -32,7 +32,7 @@ func main() {
         case "!ls":
             b, err := exec.Command("ls").Output()
             if err != nil {
-                log.Fatal(err)
+                log.Println(err)
             }
             fmt.Fprint(w, string(b))
         case "":
@@ -40,11 +40,5 @@ func main() {
         default:
             client.Parse(strings.Split(s.Text(), " "))
         }
-
-        // todo:
-        // don't crash on errors
-        // handle arrow key inputs and normal editing
     }
-
-    client.Parse(os.Args[1:])
 }
