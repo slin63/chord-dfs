@@ -20,9 +20,6 @@ import (
 //   - Hash the file onto some appropriate PID on the ring.
 //   - Add that PID to a slice with PIDs of its N = Config.C.Replicas successors.
 //   - Message those PIDs and tell them to delete their entries.
-//   - If the connecting to the node fails:
-//      - Add to retry queue # TODO: Implement
-
 func Delete(args *spec.DeleteArgs) error {
 	var client *rpc.Client
 	var err error
@@ -34,7 +31,6 @@ func Delete(args *spec.DeleteArgs) error {
 	// Either:
 	//   - Delete from own server
 	//   - Delete from other server
-	//   - Save this Delete action to be tried again later
 	for i := 0; i < config.C.Replicas+1; i++ {
 		if next == self.PID {
 			// Just delete this file if we have it
@@ -85,9 +81,9 @@ func callDelete(PID int, args *spec.DeleteArgs, client *rpc.Client) error {
 // DeleteRespond (receive RPC) (from: another server)
 // Try and delete the given file
 func (f *Filesystem) DeleteRespond(args spec.DeleteArgs, b *bool) error {
-	storeRWMutex.RLock()
+	storeRWMutex.Lock()
+	defer storeRWMutex.Unlock()
 	_, ok := store[args.Filename]
-	storeRWMutex.RUnlock()
 	if ok {
 		delete(store, args.Filename)
 		return filesys.Remove(args.Filename)

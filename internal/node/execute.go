@@ -60,6 +60,18 @@ func execute(method parser.MethodType, args []string, result *responses.Result) 
         if err != nil {
             *result = responses.Result{Success: false, Error: responses.FILENOTFOUND}
         }
+    case parser.LS:
+        sdfs := args[0]
+        holders, err := Ls(&spec.LsArgs{Filename: sdfs})
+        if err != nil {
+            *result = responses.Result{Success: false, Error: responses.FILENOTFOUND}
+        }
+
+        data, err := json.Marshal(holders)
+        if err != nil {
+            log.Fatal("[execute()] Error while marshaling response data:", err)
+        }
+        *result = responses.Result{Success: true, Data: string(data)}
     default:
         panic("TODO: Add the other methods")
     }

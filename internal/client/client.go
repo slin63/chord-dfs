@@ -69,6 +69,9 @@ func Parse(args []string) {
 	case parser.DELETE:
 		sdfs = args[1]
 		methodS, _ = parser.MethodString(parser.DELETE)
+	case parser.LS:
+		sdfs = args[1]
+		methodS, _ = parser.MethodString(parser.LS)
 	default:
 		panic("TODO: Add more methods")
 	}
@@ -129,10 +132,10 @@ func callPutEntry(client *rpc.Client, args []string) (*responses.Result, error) 
 	if !result.Success && result.Error == responses.LEADERREDIRECT {
 		redir := strings.Split(result.Data, ",")
 		addr := redir[1]
-		fmt.Printf("[CALLPUTENTRY] Received leader redirect: %s", addr)
+		fmt.Printf("[CALLPUTENTRY] Received leader redirect: %s\n", addr)
 		client, err = rpc.DialHTTP("tcp", addr+":"+config.C.RaftRPCPort)
 		if err != nil {
-			fmt.Println("[ERROR] PutEntry() dialing:", err)
+			fmt.Println("[ERROR] PutEntry() dialing:\n", err)
 			return &result, err
 		}
 
@@ -140,7 +143,7 @@ func callPutEntry(client *rpc.Client, args []string) (*responses.Result, error) 
 			fmt.Println(err)
 			return &result, err
 		}
-		fmt.Printf("[CALLPUTENTRY] Successfully dialed: %s", addr)
+		fmt.Printf("[CALLPUTENTRY] Successfully dialed: %s\n", addr)
 	}
 
 	return &result, nil

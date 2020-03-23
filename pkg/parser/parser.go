@@ -12,6 +12,7 @@ const (
     PUT MethodType = iota
     GET
     DELETE
+    LS
 )
 
 func MethodString(method MethodType) (string, bool) {
@@ -22,6 +23,8 @@ func MethodString(method MethodType) (string, bool) {
         return "GET", true
     case DELETE:
         return "DELETE", true
+    case LS:
+        return "LS", true
     default:
         return "", false
     }
@@ -54,6 +57,11 @@ func ParseEntry(args []string) (MethodType, []string, bool) {
             return 0, args, false
         }
         return DELETE, args, true
+    case "ls":
+        if len(args) < 1 {
+            return 0, args, false
+        }
+        return LS, args, true
     default:
         return 0, args, false
     }

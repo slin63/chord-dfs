@@ -17,6 +17,7 @@
     "LogPutAssign": true,
     "LogDelete": true,
     "LogGet": true,
+    "LogLs": true,
 
     "FilesystemRPCPort": "6005",
     "Filedir": "/store/",

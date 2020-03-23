@@ -29,6 +29,7 @@ type configParam struct {
 	LogPutAssign bool
 	LogDelete    bool
 	LogGet       bool
+	LogLs        bool
 
 	// Filesystem
 	FilesystemRPCPort string
