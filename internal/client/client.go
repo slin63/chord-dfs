@@ -44,8 +44,8 @@ func Parse(args []string) {
 		fmt.Println(HelpS)
 		return
 	}
-
-	client, err := rpc.DialHTTP("tcp", "172.21.0.2:"+config.C.RaftRPCPort)
+	fmt.Println("introducer:" + config.C.RaftRPCPort)
+	client, err := rpc.DialHTTP("tcp", "chord-dfs_worker_2:"+config.C.RaftRPCPort)
 	if err != nil {
 		fmt.Println("[ERROR] PutEntry() dialing:", err)
 	}

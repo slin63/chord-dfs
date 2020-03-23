@@ -6,11 +6,13 @@ TODO: Link blog post here.
 
 ## Setup
 #### Launching with `docker-compose`
+0. Setup the network.
+    - `docker network create dfs-net`
 1. `docker-compose build && docker-compose up --remove-orphans --scale worker=<worker_count>`
     - Start 1 + `worker_count` nodes.
     - Recommended `worker_count ~= 5`. CPU utilization is high across all three components so expect some sluggishness.
 2. Build & run client with
-    - `docker build --tag client . -f ./dockerfiles/client/Dockerfile; docker run --rm -it client /bin/sh -c ./dfs`
+    - `docker build --tag client . -f ./dockerfiles/client/Dockerfile; docker run --rm -it --network="dfs-net" client /bin/sh -c ./dfs`
     - `> put go.mod remote`.
     - `> get remote local`.
     -  Available client commands listed below in _Client Commands_.

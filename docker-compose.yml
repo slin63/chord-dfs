@@ -6,10 +6,6 @@ services:
     container_name: introducer
     environment:
       - INTRODUCER=1
-    ports:
-      - "6002:6002"
-      - "6003:6003"
-      - "6004:6004"
     build:
       context: .
       dockerfile: dockerfiles/all/Dockerfile
@@ -21,3 +17,8 @@ services:
     build:
       context: .
       dockerfile: dockerfiles/all/Dockerfile
+
+networks:
+  default:
+    external:
+      name: dfs-net
