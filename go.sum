@@ -1,2 +1,4 @@
 github.com/slin63/raft-consensus v0.0.0-20200321201140-d1b53966be9b h1:XVMelrCiXR3nChLWq28MHyaYlUNuYNqEtEveUd5vj2c=
 github.com/slin63/raft-consensus v0.0.0-20200321201140-d1b53966be9b/go.mod h1:tA0iV+eV50uOUp4CHM7oR2O3uQjWgAlcN3N0K8+iOJU=
+github.com/slin63/raft-consensus v0.0.0-20200323192208-e83d31ebe541 h1:DaAjwQQ9nbUTUamPk48VYTdrQMjcgQ07hiPtxI6PZGw=
+github.com/slin63/raft-consensus v0.0.0-20200323192208-e83d31ebe541/go.mod h1:tA0iV+eV50uOUp4CHM7oR2O3uQjWgAlcN3N0K8+iOJU=

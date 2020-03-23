@@ -1,6 +1,7 @@
 {
     "Introducer": "introducer",
     "ServerPrefix": "chord-dfs_worker_",
+    "MaxServerLookups": 10,
 
     "Prefix": "[DFS]",
     "Logfile": "dfs.log",

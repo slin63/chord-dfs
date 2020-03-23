@@ -44,10 +44,12 @@ func Parse(args []string) {
 		fmt.Println(HelpS)
 		return
 	}
-	fmt.Println("introducer:" + config.C.RaftRPCPort)
-	client, err := rpc.DialHTTP("tcp", "chord-dfs_worker_2:"+config.C.RaftRPCPort)
+
+	// Try connecting to any node.
+	client, err := getLiveNode()
 	if err != nil {
-		fmt.Println("[ERROR] PutEntry() dialing:", err)
+		fmt.Println(err)
+		return
 	}
 
 	switch method {
@@ -55,7 +57,8 @@ func Parse(args []string) {
 		local = args[1]
 		f, err := ioutil.ReadFile(local)
 		if err != nil {
-			fmt.Println("[putArgs()]: ", err)
+			fmt.Println(err)
+			return
 		}
 		args = append(args, string(f))
 		methodS, _ = parser.MethodString(parser.PUT)
@@ -70,13 +73,18 @@ func Parse(args []string) {
 		panic("TODO: Add more methods")
 	}
 
-	var result *responses.Result
-	if err = client.Call("Ocean.PutEntry", strings.Join(args, " "), &result); err != nil {
+	// Try sending a PutEntry.
+	result, err := callPutEntry(client, args)
+	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
-	if !result.Success {
-		fmt.Printf("Something went wrong inside the massive black box. Sorry!\n\terrcode: %d", result.Error)
+	if !result.Success && result.Error != responses.LEADERREDIRECT {
+		fmt.Printf(
+			"Something went wrong inside the massive black box. Sorry!\n\terrcode: %d\n\tdata: %s",
+			result.Error, result.Data,
+		)
 		return
 	}
 
@@ -89,6 +97,7 @@ func Parse(args []string) {
 		err := ioutil.WriteFile(local, []byte(result.Data), 0644)
 		if err != nil {
 			fmt.Printf("Error trying to write file to local filesystem: %v", err)
+			return
 		}
 
 		log.Printf("Wrote [SDFS=%s] to [LOCAL=%s].", sdfs, local)
@@ -101,4 +110,57 @@ func formatEntry(s string) string {
 		s = s[0:40] + " ... " + fmt.Sprintf("(+%d)", len(s)-40)
 	}
 	return s
+}
+
+// Send a PutEntry to the given server. Possible outcomes:
+//  - Server is the leader and PutEntry is accepted
+//  - Server is not the leader and offers a redirect to the leader
+//    - Connect to that server and set off the PutEntry
+func callPutEntry(client *rpc.Client, args []string) (*responses.Result, error) {
+	var result responses.Result
+	var err error
+	// Dispatch to the given client
+	if err = client.Call("Ocean.PutEntry", strings.Join(args, " "), &result); err != nil {
+		fmt.Println(err)
+		return &result, err
+	}
+
+	// Redispatch request to proper leader. Assume we're never redirected more than once
+	if !result.Success && result.Error == responses.LEADERREDIRECT {
+		redir := strings.Split(result.Data, ",")
+		addr := redir[1]
+		fmt.Printf("[CALLPUTENTRY] Received leader redirect: %s", addr)
+		client, err = rpc.DialHTTP("tcp", addr+":"+config.C.RaftRPCPort)
+		if err != nil {
+			fmt.Println("[ERROR] PutEntry() dialing:", err)
+			return &result, err
+		}
+
+		if err = client.Call("Ocean.PutEntry", strings.Join(args, " "), &result); err != nil {
+			fmt.Println(err)
+			return &result, err
+		}
+		fmt.Printf("[CALLPUTENTRY] Successfully dialed: %s", addr)
+	}
+
+	return &result, nil
+}
+
+// Return any node that is alive, trying the introducer first.
+func getLiveNode() (*rpc.Client, error) {
+	client, err := rpc.DialHTTP("tcp", config.C.Introducer+":"+config.C.RaftRPCPort)
+	if err != nil {
+		fmt.Println("[GETLIVENODE] Introducer dead. Trying to find new leader")
+		for i := 0; i < config.C.MaxServerLookups; i++ {
+			next := fmt.Sprintf("%s%d", config.C.ServerPrefix, i+1)
+			client, err = rpc.DialHTTP("tcp", next+":"+config.C.RaftRPCPort)
+			if err == nil {
+				fmt.Printf("[GETLIVENODE] Alive node at %s\n", next)
+				break
+			}
+			fmt.Printf("[GETLIVENODE] %s not available.\n", next)
+		}
+	}
+
+	return client, err
 }

@@ -10,7 +10,9 @@ import (
 
 type configParam struct {
 	// Protocol
-	Introducer string
+	Introducer       string
+	ServerPrefix     string
+	MaxServerLookups int
 
 	// Logging
 	Prefix string
