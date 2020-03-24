@@ -32,3 +32,8 @@ type LsArgs struct {
     // File data
     Filename string
 }
+
+type StoreArgs struct {
+    // Server PID
+    PID int
+}

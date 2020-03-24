@@ -21,6 +21,7 @@ type configParam struct {
 	LogfileClient      string
 	LogExecute         bool
 	LogFileReplication bool
+	LogStore           bool
 
 	LogWrites  bool
 	LogDeletes bool

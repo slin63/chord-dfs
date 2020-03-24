@@ -3,8 +3,10 @@ package node
 
 import (
     "encoding/json"
+    "errors"
     "fmt"
     "log"
+    "strconv"
     "strings"
 
     "github.com/slin63/chord-dfs/internal/config"
@@ -68,6 +70,24 @@ func execute(method parser.MethodType, args []string, result *responses.Result) 
         }
 
         data, err := json.Marshal(holders)
+        if err != nil {
+            log.Fatal("[execute()] Error while marshaling response data:", err)
+        }
+        *result = responses.Result{Success: true, Data: string(data)}
+    case parser.STORE:
+        PID, _ := strconv.Atoi(args[0])
+        _, ok := self.MemberMap[PID]
+        if !ok {
+            *result = responses.Result{Success: false, Error: responses.FILENOTFOUND}
+            return errors.New(fmt.Sprintf("[execute()] [PID=%d] does not exist.", PID))
+        }
+
+        files, err := Store(&spec.StoreArgs{PID: PID})
+        if err != nil {
+            *result = responses.Result{Success: false}
+        }
+
+        data, err := json.Marshal(files)
         if err != nil {
             log.Fatal("[execute()] Error while marshaling response data:", err)
         }

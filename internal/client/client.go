@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/rpc"
+	"strconv"
 	"strings"
 
 	"github.com/slin63/chord-dfs/internal/config"
@@ -14,11 +15,11 @@ import (
 )
 
 const HelpS = `Available operations:
-1. put localfilename sdfsfilename (from local dir)
-2. get sdfsfilename localfilename (fetches to local dir)
-3. delete sdfsfilename
-4. ls filename (list all machines where this data is stored)
-5. store (list all files stored on this machine)`
+1. put <localfilename> <sdfsfilename> (from local dir)
+2. get <sdfsfilename> <localfilename> (fetches to local dir)
+3. delete <sdfsfilename>
+4. ls <filename> (list all machines where this data is stored)
+5. store <PID> (list all files stored on this machine)`
 
 // Interfaces with Raft leader.
 //   - Client validates syntax of user entry
@@ -73,7 +74,11 @@ func Parse(args []string) {
 		sdfs = args[1]
 		methodS, _ = parser.MethodString(parser.LS)
 	case parser.STORE:
-		sdfs = args[1]
+		_, err := strconv.Atoi(args[1])
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 		methodS, _ = parser.MethodString(parser.STORE)
 	default:
 		panic("TODO: Add more methods")
@@ -88,7 +93,7 @@ func Parse(args []string) {
 
 	if !result.Success && result.Error != responses.LEADERREDIRECT {
 		fmt.Printf(
-			"Something went wrong inside the massive black box. Sorry!\n\terrcode: %d\n\tdata: %s",
+			"Something went wrong inside the massive black box. Sorry!\n\terrcode: %d\n\tdata: %s\n",
 			result.Error, result.Data,
 		)
 		return

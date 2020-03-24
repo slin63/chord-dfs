@@ -37,6 +37,8 @@ func main() {
             fmt.Fprint(w, string(b))
         case "":
             continue
+        case "help":
+            fmt.Fprint(w, client.HelpS)
         default:
             client.Parse(strings.Split(s.Text(), " "))
         }

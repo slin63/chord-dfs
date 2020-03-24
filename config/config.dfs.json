@@ -18,6 +18,7 @@
     "LogDelete": true,
     "LogGet": true,
     "LogLs": true,
+    "LogStore": true,
 
     "FilesystemRPCPort": "6005",
     "Filedir": "/store/",
