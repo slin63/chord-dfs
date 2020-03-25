@@ -28,6 +28,7 @@ func Delete(args *spec.DeleteArgs) error {
 	FPID := hashing.MHash(args.Filename, self.M)
 	PID := spec.NearestPID(FPID, &self)
 	next := PID
+	failures := 0
 	// Either:
 	//   - Delete from own server
 	//   - Delete from other server
@@ -36,10 +37,13 @@ func Delete(args *spec.DeleteArgs) error {
 			// Just delete this file if we have it
 			storeRWMutex.RLock()
 			_, ok := store[args.Filename]
-			if ok {
-				delete(store, args.Filename)
-				filesys.Remove(args.Filename)
+			if !ok {
+				storeRWMutex.RUnlock()
+				failures++
+				continue
 			}
+			delete(store, args.Filename)
+			filesys.Remove(args.Filename)
 			storeRWMutex.RUnlock()
 			next = spec.GetSuccessor(&self, next)
 			continue
@@ -51,6 +55,7 @@ func Delete(args *spec.DeleteArgs) error {
 				fmt.Sprintf("[DELETE-X] [PID=%d] Not responding. Skipping.", next),
 				config.C.LogDelete,
 			)
+			failures++
 			next = spec.GetSuccessor(&self, next)
 			continue
 		}
@@ -62,10 +67,14 @@ func Delete(args *spec.DeleteArgs) error {
 				fmt.Sprintf("[DELETE-X] [PID=%d] Error received from callDelete(). Skipping.", next),
 				config.C.LogDelete,
 			)
+			failures++
 		}
 		next = spec.GetSuccessor(&self, next)
 	}
 
+	if failures == config.C.Replicas+1 {
+		return errors.New("Unable to delete file.")
+	}
 	return nil
 }
 
