@@ -6,6 +6,9 @@
     "Timescale": 1,
     "Quorum": 0.6,
 
+    "RestoreWait": 1,
+    "RestoreTimeout": 3,
+
     "Prefix": "[RAFT]",
     "Logfile": "raft.log",
     "LogMembership": false,

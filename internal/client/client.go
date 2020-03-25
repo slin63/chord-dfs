@@ -1,6 +1,7 @@
 package client
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -99,9 +100,23 @@ func Parse(args []string) {
 		return
 	}
 
+	resultsHeader := fmt.Sprintf("Success!\n\tExecuted %s.\n\t", methodS)
 	resultsFormattedS := "Result: %s\n\tEntry: %s"
 	resultsFormatted := fmt.Sprintf(resultsFormattedS, formatEntry(result.Data), formatEntry(result.Entry))
-	log.Printf("Success!\n\tExecuted %s.\n\t%s", methodS, resultsFormatted)
+
+	// Present untruncated results
+	if method == parser.STORE {
+		var results []string
+		err := json.Unmarshal([]byte(result.Data), &results)
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println(resultsHeader + "Result:")
+		for _, file := range results {
+			fmt.Println("\t* " + file)
+		}
+		return
+	}
 
 	// Write to local file system
 	if method == parser.GET {
@@ -110,9 +125,11 @@ func Parse(args []string) {
 			fmt.Printf("Error trying to write file to local filesystem: %v", err)
 			return
 		}
-
 		log.Printf("Wrote [SDFS=%s] to [LOCAL=%s].", sdfs, local)
+		return
 	}
+
+	log.Printf("%s%s", resultsHeader, resultsFormatted)
 }
 
 func formatEntry(s string) string {
