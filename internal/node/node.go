@@ -28,7 +28,9 @@ var storeRWMutex sync.RWMutex
 var writes = make(chan spec.WriteCmd, 10)
 
 func Live() {
-	// Create directory for storing files
+	// Create directory for storing files.
+	// Make sure it's empty, as filesystem changes are preserved between Docker starts and stops
+	os.RemoveAll(config.C.Filedir)
 	os.Mkdir(config.C.Filedir, 0644)
 
 	// Get initial membership info
