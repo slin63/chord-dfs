@@ -1,8 +1,9 @@
-# chord-dfs
-A Chord based distributed file system.
+# ![](./images/fishsmall.png) Chord-ish DeFiSh 
+A Chord-based distributed file system that maintains state through a replicated log. Built using a bunch of other junk that I built. Explanation with graphics at the bottom!
 
-## Implementation
-TODO: Link blog post here.
+Uses:
+- [Chord-ish](https://github.com/slin63/chord-dfs) as a membership and failure detection layer.
+- [Leeky Raft](https://github.com/slin63/raft-consensus) as a consensus layer.
 
 ## Setup
 #### Launching with `docker-compose`
@@ -31,3 +32,22 @@ TODO: Link blog post here.
 3. `delete sdfsfilename`
 4. `ls filename` (list all machines where this data is stored)
 5. `store` (list all files stored on this machine)
+
+## In a Nutshell
+
+Chord-ish DeFiSh works by assigning nodes / servers in a network onto some "virtual ring", giving them a distinct ID number as a function of their IP address.
+
+Files are given a distinct ID number as well, as a function of their filename. The function to give ID numbers is the same for both files and nodes.
+
+A file is stored at the first node with an ID greater than or equal to its own.
+
+Files are replicated to the 2 nodes directly "ahead" of the aforementioned node. Files are stored as actual files each nodes' filesystem, and as `filename:sha1(file data)` maps in the runtime memory of each Chordish DeFiSh process, as a fast way to check for file ownership & save time by ignoring write requests for a file it already has.
+
+The visuals below will explain how this all comes together.
+
+![](./images/1.jpg)
+
+![](./images/2.jpg)
+
+![](./images/3.jpg)
+
