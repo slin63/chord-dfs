@@ -37,11 +37,11 @@ Uses:
 
 Chord-ish DeFiSh works by assigning nodes / servers in a network onto some "virtual ring", giving them a distinct ID number as a function of their IP address.
 
-Files are given a distinct ID number as well, as a function of their filename. The function to give ID numbers is the same for both files and nodes.
+Files are given a distinct ID number as a function of their filename. The function to give ID numbers is the same for both files and nodes.
 
 A file is stored at the first node with an ID greater than or equal to its own.
 
-Files are replicated to the 2 nodes directly "ahead" of the aforementioned node. Files are stored as actual files each nodes' filesystem, and as `filename:sha1(file data)` maps in the runtime memory of each Chordish DeFiSh process, as a fast way to check for file ownership & save time by ignoring write requests for a file it already has.
+Files are replicated to the 2 nodes directly "ahead" of the aforementioned node. Files are stored as actual files in each nodes' filesystem, and as `filename:sha1(file data)` maps in the runtime memory of each Chordish DeFiSh process, as a fast way to check for file ownership & save time by ignoring write requests for a file it already has.
 
 The visuals below will explain how this all comes together.
 
