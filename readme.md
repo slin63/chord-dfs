@@ -35,15 +35,17 @@ Uses:
 
 ## In a Nutshell
 
-Chord-ish DeFiSh works by assigning nodes / servers in a network onto some "virtual ring", giving them a distinct ID number as a function of their IP address.
+Chord-ish DeFiSh works by combining three separate layers, each of which I built from scratch and are coated in an alarming amount of my own blood, creaking from the rust that accumulated as a result of my tears and sweat getting all over them. They are listed in order of their role in the placing of a user's file onto the distributed filesystem.
 
-Files are given a distinct ID number as a function of their filename. The function to give ID numbers is the same for both files and nodes.
+1. [Chord-ish](https://github.com/slin63/chord-failure-detector#-chord-ish), the membership layer. The membership layer lays the foundation for everything by assigning nodes / servers in a network onto some "virtual ring", giving them a distinct ID number as a function of their IP address. Then each node begins heartbeating to some number of nodes around it, setting up a system that allows them to gossip membership information and become aware of failures.
 
-A file is stored at the first node with an ID greater than or equal to its own.
+2. [Leeky Raft](https://github.com/slin63/raft-consensus#-leeky-raft), the consensus layer. A client sends commands, or entries to the consensus layer. These commands are similar to HTTP verbs. For example, the command to put the file `test.txt` onto our distributed filesystem with the name `remote.txt` would be expressed as `"PUT test.txt remote.txt"`. The consensus layer then replicates this entry to all other nodes in the network. On confirmation that the replication was (mostly) successful, they send the command to the filesystem layer.
 
-Files are replicated to the 2 nodes directly "ahead" of the aforementioned node. Files are stored as actual files in each nodes' filesystem, and as `filename:sha1(file data)` maps in the runtime memory of each Chordish DeFiSh process, as a fast way to check for file ownership & save time by ignoring write requests for a file it already has.
+3. [Chordish DeFiSh](https://github.com/slin63/chord-dfs#-chord-ish-defish), the filesystem layer. The filesystem layer receives the command from the consensus layer and begins executing it. It assigns the file a distinct ID number as a function of their filename, using the same method as the membership layer. It then stores this file at the first node with an ID greater than or equal to its own. If no node's ID is greater, then it wraps around the ring and tries to find a node there.
 
-The visuals below will explain how this all comes together.
+   Files are replicated to the 2 nodes directly "ahead" of the aforementioned node. Files are stored as actual files in each nodes' filesystem, and as `filename:sha1(file data)` maps in the runtime memory of each Chordish DeFiSh process, as a fast way to check for file ownership & save time by ignoring write requests for a file it already has.
+
+   From there, users can upload, delete, or download files from the file system. The visuals below will explain how this all works, sort of.
 
 ![](./images/1.jpg)
 
