@@ -1,9 +1,18 @@
-# ![](./images/fishsmall.png) Chord-ish DeFiSh 
+# ![](./images/fishsmall.png) Chord-ish DeFiSh
 A Chord-based distributed file system that maintains state through a replicated log. Built using a bunch of other junk that I built. Explanation with graphics at the bottom!
 
 Uses:
 - [Chord-ish](https://github.com/slin63/chord-failure-detector#-chord-ish) as a membership and failure detection layer.
 - [Leeky Raft](https://github.com/slin63/raft-consensus#-leeky-raft) as a consensus layer.
+
+![](./images/startup.gif)
+
+*Starting the Raft cluster.*
+
+![](./images/leaderelection.gif)
+
+*Electing a new leader on leader failure.*
+
 
 ## Setup
 #### Launching with `docker-compose`
